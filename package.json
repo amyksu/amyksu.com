@@ -1,0 +1,31 @@
+{
+  "name": "amyksu-com",
+  "description": "My personal website.",
+  "version": "0.0.1",
+  "author": "Amy Su",
+  "main": "Makefile",
+  "scripts": {
+    "start": "make server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amyksu/amyksu.com"
+  },
+  "engines": {
+    "node": "^11.0.0",
+    "npm": "^6.4.1"
+  },
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/amyksu/amyksu.com/issues"
+  },
+  "homepage": "https://github.com/amyksu/amyksu.com#readme",
+  "license": "MIT",
+  "dependencies": {
+    "jstransformer-handlebars": "^1.1.0",
+    "metalsmith": "^2.3.0",
+    "metalsmith-layouts": "^2.3.0",
+    "metalsmith-markdown": "^1.1.0",
+    "metalsmith-matters": "^1.2.0"
+  }
+}
