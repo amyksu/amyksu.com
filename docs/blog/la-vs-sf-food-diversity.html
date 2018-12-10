@@ -51,11 +51,11 @@
       </nav>
     </header>
 
-    <div class="cover dt w-100 vh-100" style="background-image: url('../photos/my-hero-image.jpg')">
-      <span role="img" aria-label="LA vs SF"> </span>
+    <div class="cover dt w-100 vh-100" style="background-image: url('../photos/LA.jpg')">
+      <span role="img" aria-label="LA vs SF: Which city has the most diverse restaurant scene?"> </span>
       <div class="dtc v-mid tc">
         <span class="f-subheadline-l pa5 fw6 tc white ttu tracked">
-          LA vs SF
+          LA vs SF: Which city has the most diverse restaurant scene?
         </span>
         <h2 class="mt2 mb0 f6 fw4 white ttu tracked">2018-12-10</h2>
       </div>
@@ -67,10 +67,10 @@
       <h1 id="pero-why-">Pero why?</h1>
 <p>Los Angeles versus San Francisco. Just google the two cities and you’ll find countless articles comparing the two. I would know since I just did. Having grown up in Southern California (or SoCal as us locals like to say) and going to school in LA, I have a greater affinity to the city. However, after meeting and making friends with a bunch of NorCal kids in college, I started to think, “Huh, maybe NorCal is cool too.” I even contemplated moving there, but alas, the expensive rent and cold weather was enough to stick to my beautiful, less expensive LA. </p>
 <p>A point of contention between my NorCal friends and I is our opinions on the two cities’ foods. I am and have always been of the mindset that because LA spans such a large area and there are so many pockets of cultural hubs, we would have the more diverse restaurant scene. My SF friends argue that the scene up there is just better (not a great argument, but so be it), and therefore, not only would the food itself be better, but the diversity of the cuisines would also be better. With this in mind, I decided to back my argument up with some data to truly see if LA or SF has the most diverse cuisine. </p>
-<h2 id="methodology">Methodology</h2>
+<h1 id="methodology">Methodology</h1>
 <p>To perform this analysis, I pulled the data from Yelp, scrubbed the data, then performed an analysis based on the USA Today Diversity Index. The USA TODAY Diversity Index, created by Phil Meyer of the University of North Carolina and Shawn McIntosh of USA Today, is a probability-based index with a range from 0 to 1 that represents the chance that two people chosen randomly from an area will be different by race and ethnicity. A higher number means more diversity, a lower number, mean less. A value of zero would apply to a population in which everyone was the same on every ethnic dimension. If every person was different from every other person on at least one dimension, the index value would be one. </p>
 <p>Because the calculation was probability based and normalizes for population amount, I used this definition and calculation to determine the food diversity index for both LA and SF. </p>
-<p>Note: The index performed by USA Today used the races defined in the Census review performed every ten years (i.e. Black, White, Asian/Pacific Islander). As the data I extracted from Yelp includes multiple countries, I treated each country as the basis of every “race” that was used in the USA Today calculation. </p>
+<p><strong>Note</strong>: The index performed by USA Today used the races defined in the Census review performed every ten years (i.e. Black, White, Asian/Pacific Islander). As the data I extracted from Yelp includes multiple countries, I treated each country as the basis of every “race” that was used in the USA Today calculation. </p>
 <h1 id="procedures">Procedures</h1>
 <p>First, I pulled and scrubbed the data from Yelp’s API. I chose Yelp, as opposed to other platforms such as Google Businesses and Foursquare, simply because Yelp is free and had all the information I needed for my analysis, such as categories and the ability to filter by location. The only downside to using Yelp was that I can only get 1,000 businesses per endpoint. To minimize the possibility of missing any businesses, I exported the businesses by zip code. Using zip codes, especially in LA, made it easier to ensure there would be no overlaps. In addition, it allowed me to also select the area which I consider to be LA but are technically listed as their own cities, such as Santa Monica, Culver City, Venice Beach, Marina Del Rey, and Beverly Hills. </p>
 <h2 id="getting-the-data">Getting the Data</h2>
@@ -88,9 +88,9 @@
     sf_zip = []
 
     #Flatten</code></pre>
-<p>Scrubbing the Data
-Using the categories section exported from Yelp, I created a master cuisine list to categorize all of the restaurants. For analysis purposes, only the categories that were location/ethnicity specific were used. See below:</p>
-<pre><code>    cuisines = [&#39;Latin&#39;,&#39;Afghan&#39;,&#39;American&#39;,&#39;Arabian&#39;,&#39;Armenian&#39;,&#39;Asian Fusion&#39;,&#39;Austrian&#39;,&#39;Basque&#39;,&#39;Belgian&#39;,&#39;Brazilian&#39;,&#39;British&#39;,&#39;Burmese&#39;,&#39;Cajun/Creole&#39;,&#39;Cantonese&#39;,
+<h2 id="scrubbing-the-data">Scrubbing the Data</h2>
+<p>Using the categories section exported from Yelp, I created a master cuisine list to categorize all of the restaurants. For analysis purposes, only the categories that were location/ethnicity specific were used. See below:</p>
+<pre><code class="language-python">    cuisines = [&#39;Latin&#39;,&#39;Afghan&#39;,&#39;American&#39;,&#39;Arabian&#39;,&#39;Armenian&#39;,&#39;Asian Fusion&#39;,&#39;Austrian&#39;,&#39;Basque&#39;,&#39;Belgian&#39;,&#39;Brazilian&#39;,&#39;British&#39;,&#39;Burmese&#39;,&#39;Cajun/Creole&#39;,&#39;Cantonese&#39;,
     &#39;Caribbean&#39;,&#39;Chinese&#39;,&#39;Colombian&#39;,&#39;Cuban&#39;,&#39;Czech&#39;,&#39;Ethiopian&#39;,&#39;Egyptian&#39;,&#39;Filipino&#39;,
     &#39;French&#39;,&#39;German&#39;,&#39;Greek&#39;,&#39;Guamanian&#39;,&#39;Hawaiian&#39;,&#39;Halal&#39;,&#39;Haitian&#39;,
     &#39;Himalayan/Nepalese&#39;,&#39;Honduran&#39;,&#39;Hungarian&#39;,&#39;Indian&#39;,&#39;Indonesian&#39;,&#39;Italian&#39;,&#39;Irish&#39;,
@@ -98,8 +98,9 @@ Using the categories section exported from Yelp, I created a master cuisine list
     &#39;Middle Eastern&#39;,&#39;Modern European&#39;,&#39;Mongolian&#39;,&#39;Moroccan&#39;,&#39;Nicaraguan&#39;,&#39;Pakistani&#39;,
     &#39;Persian/Iranian&#39;,&#39;Peruvian&#39;,&#39;Polish&#39;,&#39;Puerto Rican&#39;,&#39;Russian&#39;,&#39;Sardinian&#39;,
     &#39;Scandinavian&#39;,&#39;Shanghainese&#39;,&#39;Singaporean&#39;,&#39;Spanish&#39;,&#39;Syrian&#39;,&#39;Szechuan&#39;,&#39;Taiwanese&#39;,&#39;Thai&#39;,&#39;Turkish&#39;,&#39;Venezuelan&#39;,&#39;Vietnamese&#39;,&#39;Argentine&#39;,&#39;Australian&#39;,&#39;African&#39;,
-    &#39;Bangladeshi&#39;,&#39;Salvadoran&#39;]</code></pre><p>Next, I created the following function to assign one of the above cuisines to each restaurant exported from Yelp. The categories column of the data is listed as a dictionary. As such, I extracted the ‘title’ or the index data from the categories section to compare to the cuisine list to obtain the finalized cuisine. This was then appended to the row: </p>
-<pre><code>    #assigning cuisines using categories column
+    &#39;Bangladeshi&#39;,&#39;Salvadoran&#39;]</code></pre>
+<p>Next, I created the following function to assign one of the above cuisines to each restaurant exported from Yelp. The categories column of the data is listed as a dictionary. As such, I extracted the ‘title’ or the index data from the categories section to compare to the cuisine list to obtain the finalized cuisine. This was then appended to the row: </p>
+<pre><code class="language-python">    #assigning cuisines using categories column
     def find_cuisine(categories):
         for category in categories:
             # check if `title` matches any item in `cuisines`
@@ -108,30 +109,32 @@ Using the categories section exported from Yelp, I created a master cuisine list
                 if cuisine in category[&#39;title&#39;]:
                 # get the cuisine and append it.
                     return cuisine
-        return &#39;NA&#39;</code></pre><p>Using this information, I created a new column with the final categorized cuisine using the code below. Unfortunately, the information exported from Yelp’s API also included businesses other than restaurants as well as additional headers that resulted from combining all of the individual zip code lists. In order to capture those cases, I used an if statement to capture these unique cases: </p>
-<pre><code>#to drop additional header rows that resulted from combining multiple files
-#removed the headers
-la = la[la.id != &#39;id&#39;]
-sf = sf[sf.id != &#39;id&#39;]
+        return &#39;NA&#39;</code></pre>
+<p>Using this information, I created a new column with the final categorized cuisine using the code below. Unfortunately, the information exported from Yelp’s API also included businesses other than restaurants as well as additional headers that resulted from combining all of the individual zip code lists. In order to capture those cases, I used an if statement to capture these unique cases: </p>
+<pre><code class="language-python">    #to drop additional header rows that resulted from combining multiple files
+    #removed the headers
+    la = la[la.id != &#39;id&#39;]
+    sf = sf[sf.id != &#39;id&#39;]
 
-#use above to assign create a new column with a list of cuisines
-for i, row in la.iterrows():
-    if row[0] == &quot;n&#39;s&quot; in row[7]:
-        continue
-    categories = json.loads(row[7].replace(&quot;\&#39;&quot;, &quot;\&quot;&quot;))
-    cuisine = find_cuisine(categories)
-    la.at[i, &#39;cuisines&#39;] = cuisine
+    #use above to assign create a new column with a list of cuisines
+    for i, row in la.iterrows():
+        if row[0] == &quot;n&#39;s&quot; in row[7]:
+            continue
+        categories = json.loads(row[7].replace(&quot;\&#39;&quot;, &quot;\&quot;&quot;))
+        cuisine = find_cuisine(categories)
+        la.at[i, &#39;cuisines&#39;] = cuisine
 
-for i, row in sf.iterrows():
-    if row[0] == &quot;n&#39;s&quot; in row[7]:
-        continue
-    categories = json.loads(row[7].replace(&quot;\&#39;&quot;, &quot;\&quot;&quot;))
-    cuisine = find_cuisine(categories)
-    sf.at[i, &#39;cuisines&#39;] = cuisine
+    for i, row in sf.iterrows():
+        if row[0] == &quot;n&#39;s&quot; in row[7]:
+            continue
+        categories = json.loads(row[7].replace(&quot;\&#39;&quot;, &quot;\&quot;&quot;))
+        cuisine = find_cuisine(categories)
+        sf.at[i, &#39;cuisines&#39;] = cuisine
 
-#To remove businesses other than restaurants, removed NAs from cuisines column 
-la = la[la.cuisines != &#39;NA&#39;]
-sf = sf[sf.cuisines != &#39;NA&#39;]</code></pre><p>Using the cleaned data, I used my own version of USA Today’s Diversity Index calculation to perform my analysis. The basis of the USA Today Diversity Index is calculated as such:</p>
+    #To remove businesses other than restaurants, removed NAs from cuisines column 
+    la = la[la.cuisines != &#39;NA&#39;]
+    sf = sf[sf.cuisines != &#39;NA&#39;]</code></pre>
+<p>Using the cleaned data, I used my own version of USA Today’s Diversity Index calculation to perform my analysis. The basis of the USA Today Diversity Index is calculated as such:</p>
 <ol>
 <li>For each race, calculate its frequency as a proportion of the whole population. The result is equal to the probability that one person, or in my case, restaurant at random will be of that race/country. </li>
 <li>Square the proportion. The probability that two people (or restaurants) chosen at random will be of that particular race is the single probability multiplied by itself (squared). </li>
@@ -139,39 +142,39 @@ sf = sf[sf.cuisines != &#39;NA&#39;]</code></pre><p>Using the cleaned data, I us
 </ol>
 <p>As noted above, the original USA Today diversity index calculation, only 5 races (White, Black, American Indian, Asian as well a Hispanic and non-Hispanic category were used to calculate the diversity index. In my calculation, I treated each cuisine found as a different race.</p>
 <p>Knowing this, I created the following function which would take the distribution table of each city and spit out the diversity index:</p>
-<pre><code>def diversity_index(list_of_count):
-  diversity_idx = 0
-  total_probability = 0 
-  total = list_of_count.sum()
-  for count in list_of_count:
-    probability = (count/total) ** 2 
-    total_probability += probability 
-  diversity_idx = 1 - total_probability 
-  return diversity_idx</code></pre><p>Results</p>
+<pre><code class="language-python">    def diversity_index(list_of_count):
+      diversity_idx = 0
+      total_probability = 0 
+      total = list_of_count.sum()
+      for count in list_of_count:
+        probability = (count/total) ** 2 
+        total_probability += probability 
+      diversity_idx = 1 - total_probability 
+      return diversity_idx</code></pre>
+<h1 id="results">Results</h1>
 <p>The diversity index for the two cities were as follows: </p>
 <table>
 <thead>
 <tr>
-<th>City</th>
-<th>Diversity Index</th>
+<th align="left">City</th>
+<th align="right">Diversity Index</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Los Angeles, CA</td>
-<td>0.90461041</td>
+<td align="left">Los Angeles, CA</td>
+<td align="right">0.90461041</td>
 </tr>
 <tr>
-<td>San Francisco, CA</td>
-<td>0.91032866</td>
+<td align="left">San Francisco, CA</td>
+<td align="right">0.91032866</td>
 </tr>
 <tr>
-<td>Difference</td>
-<td>0.0057182</td>
+<td align="left">Difference</td>
+<td align="right">0.0057182</td>
 </tr>
 </tbody></table>
 <p>As you can see from the above, SF barely edges out LA by .0057, meaning SF is more diverse than LA. To get a better understanding of the meaning behind this, let’s see how the distribution differs. </p>
-<p><img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541143363557_lad.png" alt=""></p>
-<img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541143363557_lad.png" width="300" height="300" />
+<img class="db w-100 mt3 mt4-ns" src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541143363557_lad.png" alt="Los Angeles Cuisine Frequency Distribution" />
 
 <p><img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541143148987_lad.png" alt=""></p>
 <p>Based on the above, there are 59 unique cuisines in LA and 60 unique cuisines in SF with a number of overlaps, which could explain why SF has a slightly larger diversity index. </p>
