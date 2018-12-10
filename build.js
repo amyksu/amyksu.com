@@ -8,6 +8,7 @@ var permalinks = require('metalsmith-permalinks');
 var markdown = require('metalsmith-markdown');
 var layouts = require('metalsmith-layouts');
 var matters = require('metalsmith-matters');
+var inPlace = require('metalsmith-in-place');
 
 /**
  * Metalsmith.
@@ -29,6 +30,12 @@ var metalsmith = new Metalsmith(__dirname)
     smartLists: true,
     smartypants: true,
     tables: true
+  }))
+  .use(inPlace({
+    suppressNoFilesError: true,
+    engineOptions: {
+      highlight: code => require('highlight.js').highlightAuto(code).value
+    }
   }))
   .use(layouts({
     default: 'blog-post.hbs',
