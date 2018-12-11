@@ -88,7 +88,7 @@ The diversity index for the two cities were as follows:
 .tg .tg-qynr{background-color:#ffffff;border-color:#656565;text-align:right;vertical-align:top}
 .tg .tg-6big{font-weight:bold;background-color:#ffffff;border-color:#656565;text-align:right;vertical-align:top}
 </style>
-<table class="tg">
+<table class="center tg">
   <tr>
     <th class="tg-dgyl">City</th>
     <th class="tg-v59u">Diversity Index</th>
@@ -109,7 +109,7 @@ The diversity index for the two cities were as follows:
 
 As you can see from the above, SF barely edges out LA by .0057, meaning SF is more diverse than LA. To get a better understanding of the meaning behind this, let’s see how the distribution differs. 
 
-<div class="mw9 center ph3-ns">
+<div class="w-100 center ph3-ns">
   <div class="cf ph2-ns">
     <div class="fl w-100 w-50-ns pa2">
       <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1544486325962_la-dist.png" alt="Los Angeles Cuisine Frequency Distribution"/>
@@ -136,7 +136,7 @@ Here are the cuisines unique to each city:
 .tg .tg-dsic{background-color:#ffffff;border-color:#656565;text-align:left;vertical-align:top}
 .tg .tg-qynr{background-color:#ffffff;border-color:#656565;text-align:right;vertical-align:top}
 </style>
-<table class="tg">
+<table class="center tg">
   <tr>
     <th class="tg-dgyl">Cuisines Unique to LA</th>
     <th class="tg-v59u">Restaurant Count</th>
