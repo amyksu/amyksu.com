@@ -18,92 +18,39 @@ To perform this analysis, I pulled the data from Yelp, scrubbed the data, then p
 
 Because the calculation was probability based and normalizes for population amount, I used this definition and calculation to determine the food diversity index for both LA and SF. 
 
-**Note**: The index performed by USA Today used the races defined in the Census review performed every ten years (i.e. Black, White, Asian/Pacific Islander). As the data I extracted from Yelp includes multiple countries, I treated each country as the basis of every “race” that was used in the USA Today calculation. 
+**Note**: The index performed by USA Today used the races defined in the Census review performed every ten years (i.e. Black, White, Asian/Pacific Islander). As the data I extracted from Yelp includes multiple countries in its "Categories" column, I treated each country as the basis of every “race” that was used in the USA Today calculation. 
 
 # Procedures
 
-First, I pulled and scrubbed the data from Yelp’s API. I chose Yelp, as opposed to other platforms such as Google Businesses and Foursquare, simply because Yelp is free and had all the information I needed for my analysis, such as categories and the ability to filter by location. The only downside to using Yelp was that I can only get 1,000 businesses per endpoint. To minimize the possibility of missing any businesses, I exported the businesses by zip code. Using zip codes, especially in LA, made it easier to ensure there would be no overlaps. In addition, it allowed me to also select the area which I consider to be LA but are technically listed as their own cities, such as Santa Monica, Culver City, Venice Beach, Marina Del Rey, and Beverly Hills. 
+First, I pulled and scrubbed the data from Yelp’s API. I chose Yelp, as opposed to other platforms such as Google Businesses and Foursquare, simply because Yelp is free and had all the information I needed for my analysis, such as categories and the ability to filter by location. The only downside to using Yelp was that I could only get 1,000 businesses per endpoint. To minimize the possibility of missing any businesses, I exported the businesses by zip code. Using zip codes, especially in LA, made it easier to ensure there would be no overlaps. In addition, it allowed me to also select the area which I consider to be LA but are technically listed as their own cities, such as Santa Monica, Culver City, Venice Beach, Marina Del Rey, and Beverly Hills. 
 
-## Getting the Data
-I used the following script to export the data. As mentioned earlier, only 1,000 businesses can be exported per endpoint. 
-
-```python
-    import os
-    import csv
-    import itertools
-    import collections
-    from yelpapi import YelpAPI
-    
-    #LA Zip codes
-    la_zip = ['90004','90005','90006','90007','90008','90010','90012','90013','90014','90015','90016','90017','90018','90019','90020','90021','90023','90024','90025','90026','90027','90028','90033','90034','90035','90036','90039','90042','90043','90046','90048','90049','90056','90057','90064','90065','90066','90067','90068','90069','90071','90077','90079','90094','90210','90211','90212','90230','90232','90291','90292','90401','90401','90402','90403','90405']
-    
-    #SF zip codes 
-    sf_zip = []
-    
-    #Flatten
-```
-
+To see how I exported the data from Yelp, please see my [GitHub repository](https://github.com/amyksu/la-vs-sf-food-diversity/blob/master/Yelp%20Data%20Pull.py). 
 
 ## Scrubbing the Data
 
-Using the categories section exported from Yelp, I created a master cuisine list to categorize all of the restaurants. For analysis purposes, only the categories that were location/ethnicity specific were used. See below:
-
-```python
-    cuisines = ['Latin','Afghan','American','Arabian','Armenian','Asian Fusion','Austrian','Basque','Belgian','Brazilian','British','Burmese','Cajun/Creole','Cantonese',
-    'Caribbean','Chinese','Colombian','Cuban','Czech','Ethiopian','Egyptian','Filipino',
-    'French','German','Greek','Guamanian','Hawaiian','Halal','Haitian',
-    'Himalayan/Nepalese','Honduran','Hungarian','Indian','Indonesian','Italian','Irish',
-    'Japanese','Korean','Lebanese','Laotian','Malaysian','Mediterranean','Mexican',
-    'Middle Eastern','Modern European','Mongolian','Moroccan','Nicaraguan','Pakistani',
-    'Persian/Iranian','Peruvian','Polish','Puerto Rican','Russian','Sardinian',
-    'Scandinavian','Shanghainese','Singaporean','Spanish','Syrian','Szechuan','Taiwanese','Thai','Turkish','Venezuelan','Vietnamese','Argentine','Australian','African',
-    'Bangladeshi','Salvadoran']
-```
+Using the categories section exported from Yelp, I created a master cuisine list to categorize all of the restaurants. For analysis purposes, only the categories that were location/ethnicity specific were used. 
 
 Next, I created the following function to assign one of the above cuisines to each restaurant exported from Yelp. The categories column of the data is listed as a dictionary. As such, I extracted the ‘title’ or the index data from the categories section to compare to the cuisine list to obtain the finalized cuisine. This was then appended to the row: 
 
 ```python
-    #assigning cuisines using categories column
-    def find_cuisine(categories):
-        for category in categories:
-            # check if `title` matches any item in `cuisines`
-            # if so, then we append matching cuisine to `row`
-            for cuisine in cuisines:
-                if cuisine in category['title']:
-                # get the cuisine and append it.
-                    return cuisine
-        return 'NA'
+#assigning cuisines using categories column
+def find_cuisine(categories):
+    for category in categories:
+        # check if `title` matches any item in `cuisines`
+        # if so, then we append matching cuisine to `row`
+        for cuisine in cuisines:
+            if cuisine in category['title']:
+            # get the cuisine and append it.
+                return cuisine
+    return 'NA'
 ```
 
-Using this information, I created a new column with the final categorized cuisine using the code below. Unfortunately, the information exported from Yelp’s API also included businesses other than restaurants as well as additional headers that resulted from combining all of the individual zip code lists. In order to capture those cases, I used an if statement to capture these unique cases: 
+Using this information, I created a new column with the final categorized cuisine using the code below. Unfortunately, the information exported from Yelp’s API also included businesses other than restaurants as well as additional headers that resulted from combining all of the individual zip code lists. In order to capture those cases, I used an if statement to capture these unique cases. 
 
-```python
-    #to drop additional header rows that resulted from combining multiple files
-    #removed the headers
-    la = la[la.id != 'id']
-    sf = sf[sf.id != 'id']
-    
-    #use above to assign create a new column with a list of cuisines
-    for i, row in la.iterrows():
-        if row[0] == "n's" in row[7]:
-            continue
-        categories = json.loads(row[7].replace("\'", "\""))
-        cuisine = find_cuisine(categories)
-        la.at[i, 'cuisines'] = cuisine
-    
-    for i, row in sf.iterrows():
-        if row[0] == "n's" in row[7]:
-            continue
-        categories = json.loads(row[7].replace("\'", "\""))
-        cuisine = find_cuisine(categories)
-        sf.at[i, 'cuisines'] = cuisine
-    
-    #To remove businesses other than restaurants, removed NAs from cuisines column 
-    la = la[la.cuisines != 'NA']
-    sf = sf[sf.cuisines != 'NA']
-```
+_For full analysis of how I scrubbed the data, please see my [jupyter notebook](https://github.com/amyksu/la-vs-sf-food-diversity/blob/master/LA%20vs%20SF%20Food%20Diversity%20Analysis.ipynb) on my GitHub repository._
 
-Using the cleaned data, I used my own version of USA Today’s Diversity Index calculation to perform my analysis. The basis of the USA Today Diversity Index is calculated as such:
+## Performing the Analysis
+Using the data I cleaned, I used my own version of USA Today’s Diversity Index calculation to perform my analysis. The basis of the USA Today Diversity Index is calculated as such:
 
   1. For each race, calculate its frequency as a proportion of the whole population. The result is equal to the probability that one person, or in my case, restaurant at random will be of that race/country. 
   2. Square the proportion. The probability that two people (or restaurants) chosen at random will be of that particular race is the single probability multiplied by itself (squared). 
@@ -114,68 +61,150 @@ As noted above, the original USA Today diversity index calculation, only 5 races
 Knowing this, I created the following function which would take the distribution table of each city and spit out the diversity index:
 
 ```python
-    def diversity_index(list_of_count):
-      diversity_idx = 0
-      total_probability = 0 
-      total = list_of_count.sum()
-      for count in list_of_count:
-        probability = (count/total) ** 2 
-        total_probability += probability 
-      diversity_idx = 1 - total_probability 
-      return diversity_idx
+#calculating diversity index
+def diversity_index(list_of_count):
+  diversity_idx = 0
+  total_probability = 0 
+  total = list_of_count.sum()
+  for count in list_of_count:
+    probability = (count/total) ** 2 
+    total_probability += probability 
+  diversity_idx = 1 - total_probability 
+  return diversity_idx
 ```
 
 # Results
 
 The diversity index for the two cities were as follows: 
 
-| City               | Diversity Index |
-| :----------------- | --------------: |
-| Los Angeles, CA    | 0.90461041      |
-| San Francisco, CA  | 0.91032866      |
-| Difference         | 0.0057182       |
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border-color:#999;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 11px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#444;background-color:#F7FDFA;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 11px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#fff;background-color:#26ADE4;}
+.tg .tg-y999{font-weight:bold;background-color:#ffffff;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-v59u{background-color:#d7a4a2;border-color:#656565;text-align:right;vertical-align:top}
+.tg .tg-dgyl{background-color:#d7a4a2;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-dsic{background-color:#ffffff;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-qynr{background-color:#ffffff;border-color:#656565;text-align:right;vertical-align:top}
+.tg .tg-6big{font-weight:bold;background-color:#ffffff;border-color:#656565;text-align:right;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-dgyl">City</th>
+    <th class="tg-v59u">Diversity Index</th>
+  </tr>
+  <tr>
+    <td class="tg-dsic">Los Angeles, CA</td>
+    <td class="tg-qynr">0.90461041</td>
+  </tr>
+  <tr>
+    <td class="tg-dsic">San Francisco, CA</td>
+    <td class="tg-qynr">0.91032866</td>
+  </tr>
+  <tr>
+    <td class="tg-y999">Difference</td>
+    <td class="tg-6big">0.0057182</td>
+  </tr>
+</table>
 
 As you can see from the above, SF barely edges out LA by .0057, meaning SF is more diverse than LA. To get a better understanding of the meaning behind this, let’s see how the distribution differs. 
 
-<img class="db w-100 mt3 mt4-ns" src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541143363557_lad.png" alt="Los Angeles Cuisine Frequency Distribution" />
-
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541143148987_lad.png)
-
+<div class="mw9 center ph3-ns">
+  <div class="cf ph2-ns">
+    <div class="fl w-100 w-50-ns pa2">
+      <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1544486325962_la-dist.png" alt="Los Angeles Cuisine Frequency Distribution"/>
+    </div>
+    <div class="fl w-100 w-50-ns pa2">
+      <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1544486336523_sf-dist.png" alt="San Francisco Cuisine Frequency Distribution"/>
+    </div>
+  </div>
+</div>
 
 Based on the above, there are 59 unique cuisines in LA and 60 unique cuisines in SF with a number of overlaps, which could explain why SF has a slightly larger diversity index. 
 
 Here are the cuisines unique to each city:
 
-| LA Unique Cuisines | Restaurant Count |
-| ------------------ | ---------------- |
-| Armenian           | 25               |
-| Venezuelan         | 16               |
-| Lebanese           | 15               |
-| Honduran           | 13               |
-| Bangladeshi        | 12               |
-| Arabian            | 3                |
-
-| SF Unique Cuisines | Restaurant Count |
-| ------------------ | ---------------- |
-| Afghan             | 14               |
-| Basque             | 14               |
-| Czech              | 10               |
-| Hungarian          | 8                |
-| Malaysian          | 8                |
-| Guamanian          | 6                |
-| Sardinian          | 5                |
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border-color:#999;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 17px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#444;background-color:#F7FDFA;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 17px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#fff;background-color:#26ADE4;}
+.tg .tg-24z0{background-color:#656565;border-color:#656565;text-align:right;vertical-align:top}
+.tg .tg-v59u{background-color:#d7a4a2;border-color:#656565;text-align:right;vertical-align:top}
+.tg .tg-b23t{background-color:#656565;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-dgyl{background-color:#d7a4a2;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-b8sj{background-color:#d7a4a2;text-align:left;vertical-align:top}
+.tg .tg-dsic{background-color:#ffffff;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-qynr{background-color:#ffffff;border-color:#656565;text-align:right;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-dgyl">Cuisines Unique to LA</th>
+    <th class="tg-v59u">Restaurant Count</th>
+    <th class="tg-b8sj">Cuisines Unique to SF</th>
+    <th class="tg-b8sj">Restaurant Count</th>
+  </tr>
+  <tr>
+    <td class="tg-dsic">Armenian</td>
+    <td class="tg-qynr">25</td>
+    <td class="tg-dsic">Afghan</td>
+    <td class="tg-qynr">14</td>
+  </tr>
+  <tr>
+    <td class="tg-dsic">Venezuelan</td>
+    <td class="tg-qynr">16</td>
+    <td class="tg-dsic">Basque</td>
+    <td class="tg-qynr">14</td>
+  </tr>
+  <tr>
+    <td class="tg-dsic">Lebanese</td>
+    <td class="tg-qynr">15</td>
+    <td class="tg-dsic">Czech</td>
+    <td class="tg-qynr">10</td>
+  </tr>
+  <tr>
+    <td class="tg-dsic">Honduran</td>
+    <td class="tg-qynr">13</td>
+    <td class="tg-dsic">Hungarian</td>
+    <td class="tg-qynr">8</td>
+  </tr>
+  <tr>
+    <td class="tg-dsic">Bangladeshi</td>
+    <td class="tg-qynr">12</td>
+    <td class="tg-dsic">Malaysian</td>
+    <td class="tg-qynr">8</td>
+  </tr>
+  <tr>
+    <td class="tg-dsic">Arabian</td>
+    <td class="tg-qynr">3</td>
+    <td class="tg-dsic">Guamanian</td>
+    <td class="tg-qynr">6</td>
+  </tr>
+  <tr>
+    <td class="tg-b23t"></td>
+    <td class="tg-24z0"></td>
+    <td class="tg-dsic">Sardinian</td>
+    <td class="tg-qynr">5</td>
+  </tr>
+</table>
 
 When we look at the charts above, you can see that the distribution of cuisines in SF are not as evenly distributed as LA. There are much more American restaurants than there are any other cuisine. Whereas in LA, the top 3 cuisines are fairly well distributed. 
 
 To further understand this relationship, I created a pie chart to represent the total percentage of each cuisine in each of the cities. I created a new “Other” category for any cuisines under 1%:
 
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541188230322_LApie.png)
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541188225521_SFpie.png)
-
+<div class="mw10 center ph3-ns">
+  <div class="cf ph2-ns">
+    <div class="fl w-100 w-50-ns pa2">
+      <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541188230322_LApie.png" alt="Percentage of Cuisines in Los Angeles"/>
+    </div>
+    <div class="fl w-100 w-50-ns pa2">
+      <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_3051722221C3CC2A85369C9ABA888BEA7A9D43682B1D92775107EE03091A4CBC_1541188225521_SFpie.png" alt="Percentage of Cuisines in San Francisco"/>
+    </div>
+  </div>
+</div>
 
 As we see above, almost a quarter of the restaurants in SF are American, while in LA the top three cuisines, Mexican, American, and Korean, make up a little less than half of the restaurant scene. In addition, with the creation of the “Other” category, the combination of all the cuisines that made up less than 1% of the distribution accumulated to a fairly large amount of the complete food scene. Also, worth noting, in comparing the categories after the combination, LA had greater diversity of cuisines, 17 including “Other”, than SF, 16 including “Other”. This supports my idea that though SF technically has more types of cuisines, LA has a more evenly distributed food scene that is not overly saturated by just one cuisine. 
 
-Conclusion
+# Conclusion
 
 From the data and my calculations, I found the following: 
 
@@ -189,21 +218,16 @@ This brings to question, what really is diversity? Is it having the most amount 
 
 As with everything in life, what I have found is up to interpretation, but, based on my original method of determination, the Diversity Index, SF is more diverse. 
 
-Full Disclosure(s)
+## Full Disclosure(s)
 
-Because my project was limited in scope and information, this is just a sample of a full population that could be studied between SF and LA. With more information, it would be interesting to see how the distribution of each cuisine across a map of LA and SF and how that reflects the neighborhoods within each city. I would have also liked to have used Census data to compare the diversity of both LA and SF to see if the food diversity is an accurate reflection of the actual cities’ population diversity as well. 
+Because my project was limited in scope and information, this is just a sample of a full population that could be studied between SF and LA. As mentioned before, Yelp's API allows a maximum of 1,000 businesses per endpoint. As such, if there were more than 1,000 businesses in any given zip code, those would have been missed. In addition, I only used the countries/ethnicities that were listed by Yelp in their "Categories" section. As such, any restaurant or business without a given country listed in their Categories section would also have been overlooked.
+
+## Future Work
+
+With more information, it would be interesting to see how the distribution of each cuisine across a map of LA and SF and how that reflects the neighborhoods within each city. I would have also liked to have used Census data to compare the diversity of both LA and SF to see if the food diversity is an accurate reflection of the actual cities’ population diversity as well. 
 
 Other interesting things I wish I could have done: 
 
   - An analysis of the food scene over time. Has SF/LA gotten more or less diverse over time?
   - An analysis on food price. What is the distribution of restaurants at different price points and what does that say about the people who frequent those places? What is the difference of these distributions in both SF and LA and what does this mean about the two cities? 
   - Was the Diversity Index really the best method? Sure I did my research, but I would maybe have tried a different approach to determining my question such as a chi-squared test. 
-
- 
-
-
-- maybe can compare this diversity to Census data of those cities? would be interesting to see if there was a big diff or not.
-- maybe expand SF to the entire bay area? SF is getting priced out by white tech bros. would be interesting to compare metropolitan SF vs. metropolitan LA.
-- trends over time. has SF gotten more or less diverse over time? has LA gotten more or less diverse? would be cool to look at that, and then to explore why. both cities have grown in population X% year over year for the past 30+ years i’m guessing. where are those people coming from?
-- would be interesting to see like. diversity of food, but what about diversity of food prices. the distribution of restaurants at the $, $$, $$$, and $$$$. and what does that say about the people who frequent those places, or the people who are keeping those places alive by patroning them? what do the differences in SF vs. LA mean about those cities?
-- what are the limitations  of the diversity index? sure SF eked out higher diversity index by 0.005, but is it really more diverse if 25% of the food is “white”? maybe you can explain the limitations of the diversity index and propose a different approach next time that compared how different the distribution is to a uniform distribution (chi-squared test: https://stats.stackexchange.com/questions/363121/social-inequality-measure-based-on-chi-square)
