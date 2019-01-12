@@ -1,6 +1,6 @@
 ---
 title: "Welcome to the Party Pal: Is Die Hard really a Christmas movie? Part 2"
-date: "2019-01-10"
+date: "2019-01-11"
 hero-image: "ny.jpg"
 ---
 
