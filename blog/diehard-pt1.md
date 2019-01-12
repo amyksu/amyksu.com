@@ -8,7 +8,7 @@ hero-image: "DH.jpg"
 
 One of the great debates trending Twitter every holiday season is whether or not Die Hard is in fact a Christmas movie. This year, we seemed to get even more confirmation that Die Hard is a Christmas classic from [Fox](https://www.youtube.com/watch?v=4Wi28Vsi_ZU), the [NYPD](https://twitter.com/NYPDnews/status/1077236447848075264) and the [LAPD](https://twitter.com/LAPDHQ/status/1077250973926535169). I mean what’s more Christmas than Bruce Willis as NYPD detective John McClane saving his estranged wife and her coworkers from Hans Gruber and his team of terrorists when they attack their holiday party at Nakatomi Plaza. *(Fun Fact: Nakatomi Plaza is actually Fox’s main corporate building, Fox Plaza, soon to be Disney Plaza.)* Like Santa, Bruce has to shimmy through small spaces, his being the ventilation system, so what more do you need to convince you? 
 
-*On the other hand*, just because a movie takes place during Christmas, doesn’t necessarily mean it’s a Christmas movie. Many argue, in fact, that technically, the movie could take place on any other day than Christmas and still work. I mean, Lethal Weapon is set during Christmas and even includes a Jingle Bell Rock opening, but you don’t hear *as many* people debating whether that’s a Christmas movie or not. Also, do hand guns and semi-automatic weapons really have a place in a true Christmas movie? 
+*On the other hand*, just because a movie takes place during Christmas, doesn’t necessarily mean it’s a Christmas movie. Many argue, in fact, that technically, the movie could take place on any other day than Christmas and still work. I mean, Lethal Weapon is set during Christmas and even includes a Jingle Bell Rock opening, but you don’t hear *as many* people debating whether that’s a Christmas movie or not. Then, there's also [Bruce Willis' take](https://www.indiewire.com/2018/07/bruce-willis-die-hard-christmas-movie-1201984149/) on whether the movie is a Christmas movie. (Spoiler Alert: he doesn't). 
 
 So, is Die Hard ***really*** a Christmas movie?
 
@@ -18,7 +18,7 @@ For my first soiree into sentiment analysis, I decided to use Twitter’s API to
   2. Do some basic statistics and visualizations using numpy, matplotlib, seaborn, and WordCloud.
   3. Do sentiment analysis of extracted tweets (2,100 tweets from Christmas Day) using Peter Turney ‘s technique mentioned in his paper [Thumbs Up or Thumbs Down? Semantic Orientation Applied to Unsupervised Classification of Reviews](https://arxiv.org/abs/cs/0212032) as well as TextBlob. 
 
-I split all three segments into three separate code repo’s and they can all be found on my [Github repository](https://github.com/amyksu/).
+I split all three segments into three separate code repo’s and they can all be found on my [Github repository](https://github.com/amyksu/die-hard-christmas).
 
 # Extracting Twitter data
 

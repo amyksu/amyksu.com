@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tachyons/4.7.4/tachyons.min.css">
+
+    <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="author" content="Amy K Su">
+    <meta name="description" content="Hello, welcome to my website.">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta property="og:title" content="Amy K Su">
+    <meta property="og:description" content="Hello, welcome to my website.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Amy K Su">
+    <meta property="og:image" content="https://amyksu.com/photos/meta.jpg" />
+    <meta name="twitter:image" content="https://amyksu.com/photos/meta.jpg" />
+    <meta name="twitter:site" content="@amyqueso">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- FAVICON. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/photos/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/photos/favicon-16x16.png">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126087031-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-126087031-1');
+    </script>
+
+    <style>
+      html, body {
+        margin: 0;
+      }
+
+    </style>
+  </head>
+  <body class="avenir next">
+    <header class="bg-light-pink fixed z-999 w-100 ph2 pv2 pv4-ns ph4-m ph5-l  o-90">
+      <nav class="f6 fw6 ttu">
+        <a class="link dim white dib mr3 fl" href="/" title="Home">Home</a>
+        <span class="fr">
+          <a class="link dim white dib mr3" href="/travel" title="Travel">Travel</a>
+          <a class="link dim white dib mr3" href="/projects" title="Projects">Projects</a>
+          <a class="link dim white dib mr3" href="/music" title="Music">Music</a>
+          <a class="link dim white dib mr3" href="/baking" title="Baking">Baking</a>
+      </span>
+      </nav>
+    </header>
+
+    <div class="cover dt w-100 vh-100" style="background-image: url('../photos/ny.jpg')">
+      <span role="img" aria-label="Welcome to the Party Pal: Is Die Hard really a Christmas movie? Part 2"> </span>
+      <div class="dtc v-mid tc">
+        <span class="f-subheadline-l pa5 fw6 tc white ttu tracked">
+          Welcome to the Party Pal: Is Die Hard really a Christmas movie? Part 2
+        </span>
+        <h2 class="mt2 mb0 f6 fw4 white ttu tracked">2019-01-10</h2>
+      </div>
+    </div>
+
+    <!-- Blog goes here. -->
+
+    <div class="avenir next center mw8-l ph1 ph2-m pt4 ph3-l f4.5 mb4 center measure lh-copy">
+      <h1 id="welcome-back-">Welcome Back!</h1>
+<p>In part two of my project, I will be doing some basic cleaning of the tweets we extracted in the last post. Then, we will do create some visualizations using Numpy, Matplotlib, Seaborn, and WordCloud. In this portion of my project, I will be trying to gain insight on these tweets by exploring the following:</p>
+<ul>
+<li>What are the most common words in the dataset?</li>
+<li>What are the most common hashtags in the dataset?</li>
+<li>What are the most commonly associated words/co-occurrences (or words that occur together) in the dataset?</li>
+</ul>
+<p><em>Note</em>: This will be a cut down version of all the work I did. For the full code, please see my <a href="https://github.com/amyksu/die-hard-christmas">Github</a>. For my previous post, <a href="/diehard-pt1">click here</a>.</p>
+<h1 id="cleaning-the-tweets">Cleaning the Tweets</h1>
+<p>In part 1 of my project, I extracted tweets from Twitter using the TwitterAPI library. Now that we have all the tweets we want, we now have to initialize the information and clean the tweets. </p>
+<h2 id="step-1-creating-pandas-dataframe">Step 1: Creating pandas DataFrame</h2>
+<p>Lucky for us, the way I extracted the tweets from Twitter solely gave us the tweets for the query we specified. Therefore, using pandas, we can initialize the data into a DataFrame while also specifying the column name. </p>
+<pre><code class="language-python">df = pd.read_csv(&#39;die-hard-tweets-no-retweets.csv&#39;)
+df.columns = [&#39;Tweet&#39;]</code></pre>
+<h2 id="step-2-cleaning-tweets">Step 2: Cleaning tweets</h2>
+<p>From what we’ve initialized, we can see that some tweets have user handles, punctuations, retweets, urls, and a bunch of other information we don’t need for our analysis. To remove these, I created a function that will clean our tweets to remove:</p>
+<ul>
+<li>all URLs</li>
+<li>Retweets and CC’s </li>
+<li>Mentions</li>
+<li>Symbols</li>
+<li>Blank Spaces</li>
+</ul>
+<pre><code class="language-python"># First, create function to remove Twitter Handles
+def clean_tweet(tweet):
+    tweet = re.sub(&#39;http\S+\s*&#39;, &#39;&#39;, tweet) #removes all urls
+    tweet = re.sub(&#39;RT|cc&#39;, &#39;&#39;, tweet) #removes RT and CC&#39;s 
+    tweet = re.sub(&#39;@\S+&#39;, &#39;&#39;, tweet) #removes mentions
+    tweet = re.sub(&#39;[%s]&#39; % re.escape(&quot;&quot;&quot;!&quot;$%&amp;&#39;()*+,-./:;&lt;=&gt;?@[\]^_`{|}~&quot;&quot;&quot;), &#39;&#39;, tweet) #removes any special characters except hashtags
+    tweet = re.sub(&#39;\s+&#39;,&#39; &#39;, tweet) #removes blank spaces
+    return tweet.lower()
+
+# Remove twitter handles
+df[&#39;clean_tweet&#39;] = np.vectorize(clean_tweet)(df[&#39;Tweet&#39;])</code></pre>
+<p>Now that we’ve cleaned the tweets, we can see now that some of the tweets are empty. Let’s replace these tweets with NA’s and drop them from our DataFrame and re-index them. (The re-indexing will be helpful for our analyses later on).</p>
+<pre><code class="language-python"># Drop NA&#39;s
+df[&#39;clean_tweet&#39;].replace(&#39; &#39;, np.nan, inplace=True)
+df = df.dropna()
+
+# Reset indeces
+df.index = range(2096) # There are 2096 tweets remaining after dropping NA&#39;s</code></pre>
+<p>While we’re at it, let’s also remove single letters, such as “a” and “I”, from our tweets.</p>
+<pre><code class="language-python">df[&#39;clean_tweet&#39;] = df[&#39;clean_tweet&#39;].apply(lambda x: &#39; &#39;.join([w for w in x.split() if len(w)&gt;1]))</code></pre>
+<h2 id="step-3-tokenizing-tweets">Step 3: Tokenizing tweets</h2>
+<p>Next, we will tokenize all the cleaned tweets in our dataset. Tokens are individual terms or words, and tokenization is the process of splitting a string of text into tokens. Tokenizing the tweets will make it easier to count the most common words, hashtags, and co-terms to answer our questions. </p>
+<pre><code class="language-python">tokenized_tweet = df[&#39;clean_tweet&#39;].apply(lambda x: x.split())</code></pre>
+<h2 id="step-4-counting-the-most-common-words">Step 4: Counting the most common words</h2>
+<p>Using the tokenized tweets, we can now count the words that are the most common in our collection of tweets. Using the Counter function from the collections library, we can use the most_common() function to count the most common words in our tweets. </p>
+<p>Also, at this point, it would be common to remove stopwords using NLTK. However, based on the list of stopwords listed, for the purposes of what I am trying to find, a lot of the words that I would be using to determine whether people agree or disagree with Die Hard being a Christmas movie would be removed. </p>
+<pre><code class="language-python">import operator
+from collections import Counter
+
+count_all = Counter()
+for line in tokenized_tweet:
+    count_all.update(line)
+
+print(count_all.most_common(5))</code></pre>
+<p>As expected, the most common words were “Christmas”, “Die” and “Hard” (these were the words used to query the tweets), but also in the top 5 common words were “is” and “a”, which makes a lot of sense. Here are the top 15 terms:</p>
+<pre><code class="language-python">[(&#39;christmas&#39;, 2546), (&#39;hard&#39;, 2032), (&#39;die&#39;, 2018), (&#39;is&#39;, 1537), (&#39;movie&#39;, 1478), (&#39;the&#39;, 1326), (&#39;and&#39;, 698), (&#39;to&#39;, 614), (&#39;of&#39;, 478), (&#39;it&#39;, 450), (&#39;that&#39;, 356), (&#39;not&#39;, 330), (&#39;on&#39;, 325), (&#39;in&#39;, 320), (&#39;you&#39;, 298)]</code></pre>
+<p>As we can see, the most frequency words are the keywords we used to query my API request (<strong>Christmas</strong> and <strong>Die Hard</strong>), but what is more interesting is that the word ‘<em>is</em>‘ is mentioned 1537 times, ‘<em>not</em>‘ is mentioned 330 times. </p>
+<h2 id="step-5-wordcloud">Step 5: WordCloud</h2>
+<p>To get a better visualization of the most common words and whether we deem them positive or negative, we will us the WordCloud visualization tool to plot the most common words in our cleaned tweets. </p>
+<div class="mw7 center ph3-ns">
+  <div class="cf ph2-ns">
+    <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_FF71F1817FD0467B91E1AB01E2167FB4EDE73E37736388AA82F394904A59955A_1547174101240_image.png" alt="Most Common Terms WordCloud"/>
+    </div>
+</div>
+
+<p>When creating the WordCloud, I labeled the positive words in green and the negative words in red. Based on that, we can see that most of the words are pretty positive. </p>
+<h2 id="step-6-bar-graph">Step 6: Bar Graph</h2>
+<p>To have a more quantitative count of whether most of the words are positive or negative, let’s create a bar graph to plot the most common words for comparison.</p>
+<div class="mw7 center ph3-ns">
+  <div class="cf ph2-ns">
+    <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_FF71F1817FD0467B91E1AB01E2167FB4EDE73E37736388AA82F394904A59955A_1547174202145_image.png" alt="Most Common Terms Bar Chart"/>
+    </div>
+</div>
+
+
+<p>As we can see from above, “not” is one of the top 20 words used in all of the tweets. When compared to the amount of times “is” was used in the tweets, the difference between the times “is” was used and “not” was used is around 1200 times, meaning that most of the times is was used are for positive reasons as opposed to negative.</p>
+<h2 id="step-4a-counting-the-most-common-hashtags">Step 4a: Counting the most common hashtags</h2>
+<p>Now that we have the most common terms, let’s see what the most common hashtags are. We’ll use the same for loop we used for the most common terms. </p>
+<pre><code class="language-python"># Count hastags only
+terms_hash = [word for line in tokenized_tweet 
+for word in line if word.startswith(&#39;#&#39;)]
+count_hashtags = Counter()
+count_hashtags.update(terms_hash)
+print(count_hashtags.most_common(15))
+
+# Results
+[(&#39;#christmas&#39;, 41), (&#39;#diehard&#39;, 37), (&#39;#diehardchristmas&#39;, 26), (&#39;#diehardisachristmasmovie&#39;, 19), (&#39;#yippeekiyay&#39;, 7), (&#39;#1&#39;, 6), (&#39;#merrychristmas&#39;, 6), (&#39;#christmasmovies&#39;, 5), (&#39;#die&#39;, 5), (&#39;#2&#39;, 4), (&#39;#3&#39;, 4), (&#39;#lapd&#39;, 4), (&#39;#nypd&#39;, 4), (&#39;#movies&#39;, 4), (&#39;#boxing&#39;, 4)]</code></pre>
+<p>We can see that most of the hashtags used are either positive or neutral, but none of the top 15 hashtags are negative. </p>
+<h2 id="step-5a-wordcloud">Step 5a: WordCloud</h2>
+<p>Now let’s visualize the hashtags to see if there are any negative hashtags in our data. </p>
+<div class="mw7 center ph3-ns">
+  <div class="cf ph2-ns">
+    <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_FF71F1817FD0467B91E1AB01E2167FB4EDE73E37736388AA82F394904A59955A_1547232234511_image.png" alt="Most Common Hashtags WordCloud"/>
+    </div>
+</div>
+
+<p>As we can see, there’s only one negative hashtag that we can see from our data. </p>
+<h2 id="step-6a-bar-chart">Step 6a: Bar Chart</h2>
+<p>Let’s see what our bar graph shows us. </p>
+<div class="mw7 center ph3-ns">
+  <div class="cf ph2-ns">
+    <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_FF71F1817FD0467B91E1AB01E2167FB4EDE73E37736388AA82F394904A59955A_1547232399191_image.png" alt="Most Common Hashtags Bar Chart"/>
+    </div>
+</div>
+
+<p>As we can see, the negative hashtag is not even in our top 20 hashtags in all of our tweets. </p>
+<h2 id="step-4b-and-6b-counting-the-most-common-term-co-occurrences">Step 4b and 6b: Counting the most common term co-occurrences</h2>
+<p>They say context is key, and with the most common words, we don’t really know the context of how they were used positively or negatively, especially the word “is”.  To get some clarity on that, I will find the co-occurrences to find out the context of some of these terms. I will build a co-occurrence matrix such that com[x][y] contains the number of times the term x has been seen in the same tweet as term y. </p>
+<p>Using the defaultdict function from the collections library we will build a co-occurrence matrix. The defaultdict function takes a function object as an argument and will return a value, in our case an integer. This will help facilitate our calculation of the probability of observing the terms individually and occurring together.</p>
+<pre><code class="language-python"># co-occurences matrix 
+from collections import defaultdict
+
+com = defaultdict(lambda : defaultdict(int))
+
+for line in tokenized_tweet: 
+    terms_only = [term for term in line 
+                  if not term.startswith((&#39;#&#39;, &#39;@&#39;))]
+
+    # Build co-occurrence matrix
+    for i in range(len(terms_only)-1):            
+        for j in range(i+1, len(terms_only)):
+            w1, w2 = sorted([terms_only[i], terms_only[j]])                
+            if w1 != w2:
+                com[w1][w2] += 1
+
+com_max = []
+# For each term, look for the most common co-occurrent terms
+for t1 in com:
+    t1_max_terms = sorted(com[t1].items(), key=operator.itemgetter(1), reverse=True)[:5]
+    for t2, t2_count in t1_max_terms:
+        com_max.append(((t1, t2), t2_count))
+
+# Get the most frequent co-occurrences
+coterms_max = sorted(com_max, key=operator.itemgetter(1), reverse=True)
+print(coterms_max[:20])</code></pre>
+<p>Let’s see the distribution via a bar graph. </p>
+<div class="mw7 center ph3-ns">
+  <div class="cf ph2-ns">
+  <img src="https://d2mxuefqeaa7sj.cloudfront.net/s_FF71F1817FD0467B91E1AB01E2167FB4EDE73E37736388AA82F394904A59955A_1547233943586_image.png" alt="Most Common Co-Occurrences Bar Chart"/>
+    </div>
+</div>
+
+<p>We can see that the top three are the words that we queried being used together, which makes sense. However, what is interesting is negative words, such as “no” or “not”, are not in the most common co-terms. We could infer from this that most of the opinions are positive rather than negative. </p>
+<h2 id="step-7-co-occurrences-search">Step 7: Co-Occurrences Search</h2>
+<p>Using our co-occurrence matrix, we can also look for a specific term and extract its most frequency co-occurrences. To do this, we simply modify the main loop. Let’s try this with the word “is”:</p>
+<pre><code class="language-python">search_word = &#39;is&#39;
+count_search = Counter()
+for line in tokenized_tweet: 
+    terms_only = [term for term in line 
+                  if not term.startswith((&#39;#&#39;, &#39;@&#39;))]
+    if search_word in terms_only:
+        count_search.update(terms_only)
+print(&#39;Co-occurence for %s:&#39; % search_word)
+print(count_search.most_common(20))
+
+# Result
+Co-occurence for is:
+[(&#39;is&#39;, 1537), (&#39;christmas&#39;, 1496), (&#39;hard&#39;, 1188), (&#39;die&#39;, 1172), (&#39;movie&#39;, 1122), (&#39;the&#39;, 781), (&#39;and&#39;, 350), (&#39;to&#39;, 335), (&#39;it&#39;, 287), (&#39;of&#39;, 270), (&#39;that&#39;, 250), (&#39;not&#39;, 233), (&#39;in&#39;, 179), (&#39;you&#39;, 175), (&#39;on&#39;, 174), (&#39;for&#39;, 145), (&#39;this&#39;, 142), (&#39;if&#39;, 141), (&#39;my&#39;, 128), (&#39;but&#39;, 120)]</code></pre>
+<p>Based on our original count of most common words and from the above, we know that “is” was used 1,537 times and out of those times, it was only used with “not” 233 times. This would suggest that most of the times that “is” was used was for positive reasons, and would, therefore, mean that most people do think that Die Hard is a Christmas movie. </p>
+<p>In my next post, I’ll be delving into sentiment analysis using Peter Turney’s technique and the TextBlob library. </p>
+<p>Thanks for reading! </p>
+    
+    </div>
+
+
+    <footer class="mw-100 pv4 ph3 ph5-ns tc">
+      <section class="cf mb5">
+          <div class="mb4 mb0-ns w-100 w-50-l fr">
+            <a class="black-70 f4 f3-ns fw6 tl link dim dib pv3 mt2 mb4 mb0-l" href="mailto:hello@amyksu.com" >
+              hello@amyksu.com
+            </a>
+          </div>
+          <div class="mb4 mb0-ns fl w-100 w-50-l" >
+            <p class="f4 fw6 mb2 black-70 mt0">
+              Let's be friends
+            </p>
+            <input placeholder="Email Address" class="mw-100 w-100 w5-ns f5 input-reset ba b--black-20 pv3 ph4 border-box">
+            <input type="submit" class="input-reset w-100 w-auto-ns bg-black-80 white f5 pv2 pv3-ns ph4 ba b--black-80 bg-hover-mid-gray">
+          </div>
+      </section>  
+    <small class="f6 db tc pa3">© 2018 <b class="ttu">Amy K Su, Inc</b>., All Rights Reserved</small>
+    <a class="link dim gray dib h2 w2 br-100 mr3" href="https://instagram.com/amyqueso" title="Instagram">
+      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M8 0C5.827 0 5.555.01 4.702.048 3.85.088 3.27.222 2.76.42c-.526.204-.973.478-1.417.923-.445.444-.72.89-.923 1.417-.198.51-.333 1.09-.372 1.942C.008 5.555 0 5.827 0 8s.01 2.445.048 3.298c.04.852.174 1.433.372 1.942.204.526.478.973.923 1.417.444.445.89.72 1.417.923.51.198 1.09.333 1.942.372.853.04 1.125.048 3.298.048s2.445-.01 3.298-.048c.852-.04 1.433-.174 1.942-.372.526-.204.973-.478 1.417-.923.445-.444.72-.89.923-1.417.198-.51.333-1.09.372-1.942.04-.853.048-1.125.048-3.298s-.01-2.445-.048-3.298c-.04-.852-.174-1.433-.372-1.942-.204-.526-.478-.973-.923-1.417-.444-.445-.89-.72-1.417-.923-.51-.198-1.09-.333-1.942-.372C10.445.008 10.173 0 8 0zm0 1.44c2.136 0 2.39.01 3.233.048.78.036 1.203.166 1.485.276.374.145.64.318.92.598.28.28.453.546.598.92.11.282.24.705.276 1.485.038.844.047 1.097.047 3.233s-.01 2.39-.048 3.233c-.036.78-.166 1.203-.276 1.485-.145.374-.318.64-.598.92-.28.28-.546.453-.92.598-.282.11-.705.24-1.485.276-.844.038-1.097.047-3.233.047s-2.39-.01-3.233-.048c-.78-.036-1.203-.166-1.485-.276-.374-.145-.64-.318-.92-.598-.28-.28-.453-.546-.598-.92-.11-.282-.24-.705-.276-1.485C1.45 10.39 1.44 10.136 1.44 8s.01-2.39.048-3.233c.036-.78.166-1.203.276-1.485.145-.374.318-.64.598-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276C5.61 1.45 5.864 1.44 8 1.44zm0 2.452c-2.27 0-4.108 1.84-4.108 4.108 0 2.27 1.84 4.108 4.108 4.108 2.27 0 4.108-1.84 4.108-4.108 0-2.27-1.84-4.108-4.108-4.108zm0 6.775c-1.473 0-2.667-1.194-2.667-2.667 0-1.473 1.194-2.667 2.667-2.667 1.473 0 2.667 1.194 2.667 2.667 0 1.473-1.194 2.667-2.667 2.667zm5.23-6.937c0 .53-.43.96-.96.96s-.96-.43-.96-.96.43-.96.96-.96.96.43.96.96z"/></svg>
+    </a>
+    <a class="link dim gray dib h2 w2 br-100 mr3 " href="https://twitter.com/amyqueso" title="amyqueso">
+      <svg data-icon="twitter" viewBox="0 0 32 32" style="fill:currentcolor">
+        <title>twitter icon</title>
+        <path d="M2 4 C6 8 10 12 15 11 A6 6 0 0 1 22 4 A6 6 0 0 1 26 6 A8 8 0 0 0 31 4 A8 8 0 0 1 28 8 A8 8 0 0 0 32 7 A8 8 0 0 1 28 11 A18 18 0 0 1 10 30 A18 18 0 0 1 0 27 A12 12 0 0 0 8 24 A8 8 0 0 1 3 20 A8 8 0 0 0 6 19.5 A8 8 0 0 1 0 12 A8 8 0 0 0 3 13 A8 8 0 0 1 2 4"></path>
+      </svg>
+    </a>
+    <a class="link dim gray dib h2 w2 br-100 mr3" href="https://github.com/amyksu" title="GitHub">
+      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M8 0C3.58 0 0 3.582 0 8c0 3.535 2.292 6.533 5.47 7.59.4.075.547-.172.547-.385 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.725-.496.056-.486.056-.486.803.056 1.225.824 1.225.824.714 1.223 1.873.87 2.33.665.072-.517.278-.87.507-1.07-1.777-.2-3.644-.888-3.644-3.953 0-.873.31-1.587.823-2.147-.083-.202-.358-1.015.077-2.117 0 0 .672-.215 2.2.82.638-.178 1.323-.266 2.003-.27.68.004 1.364.092 2.003.27 1.527-1.035 2.198-.82 2.198-.82.437 1.102.163 1.915.08 2.117.513.56.823 1.274.823 2.147 0 3.073-1.87 3.75-3.653 3.947.287.246.543.735.543 1.48 0 1.07-.01 1.933-.01 2.195 0 .215.144.463.55.385C13.71 14.53 16 11.534 16 8c0-4.418-3.582-8-8-8"/></svg>
+    </a>
+  </footer>
+
+  </body>
+</html>
