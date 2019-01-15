@@ -1,6 +1,6 @@
 ---
-title: "Ho Ho Ho: Is Die Hard really a Christmas movie? Part 3"
-date: "2019-01-15"
+title: "Yippee Ki-Yay: Is Die Hard really a Christmas movie? Part 3"
+date: "2019-01-11"
 hero-image: "dhla.jpg"
 ---
 
