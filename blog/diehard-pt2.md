@@ -12,7 +12,7 @@ In part two of my project, I will be doing some basic cleaning of the tweets we 
   - What are the most common hashtags in the dataset?
   - What are the most commonly associated words/co-occurrences (or words that occur together) in the dataset?
 
-*Note*: This will be a cut down version of all the work I did. For the full code, please see my [Github](https://github.com/amyksu/die-hard-christmas). For my previous post, [click here](/diehard-pt1).
+*Note*: This will be a cut down version of all the work I did. For the full code, please see my [Github](https://github.com/amyksu/die-hard-christmas). For my previous post, [click here](blog/diehard-pt1).
 
 # Cleaning the Tweets
 
