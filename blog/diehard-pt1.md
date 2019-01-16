@@ -30,13 +30,13 @@ The first step in my project was to extract and scrape Twitter’s API to get tw
 To do this, I first loaded all of the libraries to facilitate this task. 
 
 ```python
-    # code to scrape Twitter API
-    import re # To match or find strings or set of strings
-    import os # To use operating system dependent functionality
-    import csv # To read to CSV
-    import itertools # To create iterators for efficient looping
-    import collections # To store elements 
-    from TwitterAPI import TwitterAPI, TwitterPager # To extract from Twitter's API
+# code to scrape Twitter API
+import re # To match or find strings or set of strings
+import os # To use operating system dependent functionality
+import csv # To read to CSV
+import itertools # To create iterators for efficient looping
+import collections # To store elements 
+from TwitterAPI import TwitterAPI, TwitterPager # To extract from Twitter's API
 ```
 
 ## Step 2: Write to File
@@ -44,9 +44,9 @@ To do this, I first loaded all of the libraries to facilitate this task.
 Using the csv library, I created a file that would store all of the tweets that will be extracted from Twitter.
 
 ```python
-    # File to write
-    file = csv.writer(open("die-hard-tweets-no-retweets.csv", "w+", 
-      encoding="utf-8"))
+# File to write
+file = csv.writer(open("die-hard-tweets-no-retweets.csv", "w+", 
+  encoding="utf-8"))
 ```
 
 ## Step 3: Initialize Twitter API
@@ -61,11 +61,11 @@ In order to extract tweets from Twitter, we need to have a Developer account and
 All of these keys/tokens will be entered into the script to access and extract from Twitter
 
 ```python
-    # Initialize Twitter API
-    api = TwitterAPI(<consumer key>,
-                    <consumer secret>,
-                    <access token key>,
-                    <access token secret>)
+# Initialize Twitter API
+api = TwitterAPI(<consumer key>,
+                <consumer secret>,
+                <access token key>,
+                <access token secret>)
 ```
 
 ## Step 4: Query Tweets and write into file 
@@ -73,16 +73,16 @@ All of these keys/tokens will be entered into the script to access and extract f
 With the API initialized and authenticated, the next step is to query the tweets by keywords and extract and write them into our file. I will query the tweets using the words, “Die Hard Christmas” and will filter out any retweets as to avoid duplicate tweets. 
 
 ```python
-    # Query tweets
-    r = TwitterPager(api, 'search/tweets', {'q': 'Die Hard Christmas-filter:retweets', 
-      'tweet_mode': 'extended'})
-    
-    # Write tweets into file
-    for item in r.get_iterator():
-            row = item['full_text'] if 'full_text' in item else ''
-            row = row.replace("\n", " ")
-            print(row)
-            file.writerow([row])
+# Query tweets
+r = TwitterPager(api, 'search/tweets', {'q': 'Die Hard Christmas-filter:retweets', 
+  'tweet_mode': 'extended'})
+
+# Write tweets into file
+for item in r.get_iterator():
+  row = item['full_text'] if 'full_text' in item else ''
+  row = row.replace("\n", " ")
+  print(row)
+  file.writerow([row])
 ```
 
 Now, we have our tweets! I stopped the query once I got to around 2,100 tweets for ease of working with the data, and I'll stop here for now also. 

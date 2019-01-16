@@ -88,48 +88,44 @@
 <p>-&gt;P(t) = DF(t) / abs(D)&lt;-</p>
 <p>-&gt;P(t1 ^ t2) = DF(t1 ^ t2) / abs(D)&lt;-</p>
 <p>where DF is Document Frequency of a term which is the number of time the term occurs in the document or tweets, in our case, and D is the set of documents/tweets.</p>
-<pre><code class="language-python">    # Import defaultdict
-    from collections import defaultdict
+<pre><code class="language-python"># Import defaultdict
+from collections import defaultdict
 
-    # from our shape argument, we see our total amount of tweets is 2,096
-    p_t = {}
-    p_t_com = defaultdict(lambda : defaultdict(int))
+# from our shape argument, we see our total amount of tweets is 2,096
+p_t = {}
+p_t_com = defaultdict(lambda : defaultdict(int))
 
-    for term, n in count_all.items():
-        p_t[term] = n/2096
-        for t2 in com[term]:
-            p_t_com[term][t2] = com[term][t2]/2096</code></pre>
+for term, n in count_all.items():
+    p_t[term] = n/2096
+    for t2 in com[term]:
+        p_t_com[term][t2] = com[term][t2]/2096</code></pre>
 <p>Next, I will define words that will help determine whether a tweet has a positive vs negative opinion. </p>
-<pre><code class="language-python">    positive_vocab = [&#39;good&#39;, &#39;great&#39;, &#39;favorite&#39;, &#39;yes&#39;, &#39;right&#39;, &#39;great&#39;, &#39;terrific&#39;, &#39;:)&#39;, &#39;:-)&#39;, &#39;endorse&#39;, &#39;is&#39;, &#39;agree&#39;, &#39;awesome&#39;, &#39;fantastic&#39;, &#39;best&#39;, &#39;better&#39;, &#39;correct&#39;, &#39;like&#39;, &#39;love&#39;, 
-    &#39;outstanding&#39;]
+<pre><code class="language-python">positive_vocab = [&#39;good&#39;, &#39;great&#39;, &#39;favorite&#39;, &#39;yes&#39;, &#39;right&#39;, &#39;great&#39;, &#39;terrific&#39;, &#39;:)&#39;, &#39;:-)&#39;, &#39;endorse&#39;, &#39;is&#39;, &#39;agree&#39;, &#39;awesome&#39;, &#39;fantastic&#39;, &#39;best&#39;, &#39;better&#39;, &#39;correct&#39;, &#39;like&#39;, &#39;love&#39;, &#39;outstanding&#39;]
 
-    negative_vocab = [&#39;isnt&#39;, &#39;terrible&#39;, &#39;isn\&#39;t&#39;, &#39;not&#39;, &#39;bad&#39;, 
-    &#39;no&#39;, &#39;wrong&#39;, &#39;disagree&#39;, &#39;dont&#39;, &#39;don\&#39;t&#39;, &#39;worse&#39;, &#39;worst&#39;, 
-    &#39;hate&#39;
-                     &#39;:(&#39;, &#39;:-(&#39;]</code></pre>
+negative_vocab = [&#39;isnt&#39;, &#39;terrible&#39;, &#39;isn\&#39;t&#39;, &#39;not&#39;, &#39;bad&#39;, &#39;no&#39;, &#39;wrong&#39;, &#39;disagree&#39;, &#39;dont&#39;, &#39;don\&#39;t&#39;, &#39;worse&#39;, &#39;worst&#39;,&#39;hate&#39;,&#39;:(&#39;, &#39;:-(&#39;]</code></pre>
 <p>Now, I will perform the calculation for PMI that we defined above.  Using the PMI calculation, I will also define the Semantic Orientation (SO) with the positive and negative vocabulary defined above.</p>
-<pre><code class="language-python">    import math
+<pre><code class="language-python">import math
 
-    pmi = defaultdict(lambda : defaultdict(int))
-    for t1 in p_t:
-        for t2 in com[t1]:
-            denom = p_t[t1] * p_t[t2]
-            pmi[t1][t2] = math.log2(p_t_com[t1][t2]/denom)
+pmi = defaultdict(lambda : defaultdict(int))
+for t1 in p_t:
+    for t2 in com[t1]:
+        denom = p_t[t1] * p_t[t2]
+        pmi[t1][t2] = math.log2(p_t_com[t1][t2]/denom)
 
-    semantic_orientation = {}
-    for term, n in p_t.items():
-        positive_assoc = sum(pmi[term][tx] for tx in positive_vocab)
-        negative_assoc = sum(pmi[term][tx] for tx in negative_vocab)
-        semantic_orientation[term] = positive_assoc - negative_assoc</code></pre>
+semantic_orientation = {}
+for term, n in p_t.items():
+    positive_assoc = sum(pmi[term][tx] for tx in positive_vocab)
+    negative_assoc = sum(pmi[term][tx] for tx in negative_vocab)
+    semantic_orientation[term] = positive_assoc - negative_assoc</code></pre>
 <p>Now that we have determined the negative and positive orientations, we can use this to determine whether specific words have a positive or negative orientation. In our case, let’s look specifically at the words in our query, ‘Die’, ‘Hard’, and ‘Christmas’ to see whether they have a positive or negative orientation. </p>
-<pre><code class="language-python">    print(&#39;Orientation for Die: %f&#39; % semantic_orientation[&#39;die&#39;])
-    print(&#39;Orientation for Hard: %f&#39; % semantic_orientation[&#39;hard&#39;])
-    print(&#39;Orientation for Christmas: %f&#39; % semantic_orientation[&#39;christmas&#39;])
+<pre><code class="language-python">print(&#39;Orientation for Die: %f&#39; % semantic_orientation[&#39;die&#39;])
+print(&#39;Orientation for Hard: %f&#39; % semantic_orientation[&#39;hard&#39;])
+print(&#39;Orientation for Christmas: %f&#39; % semantic_orientation[&#39;christmas&#39;])
 
-    # Results
-    Orientation for Die: -0.019899
-    Orientation for Hard: 0.976432
-    Orientation for Christmas: 1.060167</code></pre>
+# Results
+Orientation for Die: -0.019899
+Orientation for Hard: 0.976432
+Orientation for Christmas: 1.060167</code></pre>
 <p>As we can see, two of the three terms have strong positive orientations and the one with the negative orientation, “Die”, is fairly low, with less than 1%. We can also attribute the negative orientation to the fact that “Die” as a word itself has a negative connotation. </p>
 <p>Therefore, based on this information, we can conclude that most of the words related to these terms are mostly positive and therefore, have a positive opinion with regards to whether Die Hard is a Christmas movie.</p>
 <h3 id="limitations"><em>Limitations</em></h3>
@@ -137,30 +133,30 @@
 <h2 id="step-2-textblob">Step 2: TextBlob</h2>
 <p>Now that we’ve tried one technique, let’s try and confirm our conclusion by using the TextBlob library. The TextBlob library is used for sentiment analysis by classifying the polarity of a tweet. TextBlob is already trained and therefore easy to use. However, because the wording between positive and negative tweets are so similar, I will train the classifier by using the <em>textblob.classifiers</em> module to create custom classifiers. To do this, I will enter in some training data that I’ve extracted from my Twitter pull that I will mark as positive or negative. </p>
 <p>Once this is done, we will import the TextBlob classifier module and training the Classifier. By using the NaiveBayesClassifier, we are overriding the default PatternAnalyzer that is typically used for sentiment analysis within TextBlob.</p>
-<pre><code class="language-python">    from textblob.classifiers import NaiveBayesClassifier
-    cl = NaiveBayesClassifier(train)</code></pre>
+<pre><code class="language-python">from textblob.classifiers import NaiveBayesClassifier
+cl = NaiveBayesClassifier(train)</code></pre>
 <p>Then, we will create a function to analyze the sentiment of our tweets based on our classifier.</p>
-<pre><code class="language-python">    from textblob import TextBlob
+<pre><code class="language-python">from textblob import TextBlob
 
-    def analyze_sentiment(tweet):
-        analysis = TextBlob(tweet, classifier=cl)
-        if analysis.sentiment.polarity &gt; 0:
-            return 1
-        elif analysis.sentiment.polarity == 0:
-            return 0
-        else:
-            return -1</code></pre>
+def analyze_sentiment(tweet):
+    analysis = TextBlob(tweet, classifier=cl)
+    if analysis.sentiment.polarity &gt; 0:
+        return 1
+    elif analysis.sentiment.polarity == 0:
+        return 0
+    else:
+        return -1</code></pre>
 <p>Now, that we have created the function, we can assign a sentiment to each of the tweets: 1 for positive, 0 for neutral, and -1 for negative. </p>
-<pre><code class="language-python">    df[&#39;SA&#39;] = np.array([analyze_sentiment(tweet) for tweet in df[&#39;clean_tweet&#39;]])
+<pre><code class="language-python">df[&#39;SA&#39;] = np.array([analyze_sentiment(tweet) for tweet in df[&#39;clean_tweet&#39;]])
 
-    # Labelling tweets
-    pos_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] &gt; 0]
-    neu_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] == 0]
-    neg_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] &lt; 0]</code></pre>
+# Labelling tweets
+pos_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] &gt; 0]
+neu_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] == 0]
+neg_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] &lt; 0]</code></pre>
 <p>Using the labels, we can see how many of our tweets are positive, negative, and neutral: </p>
-<pre><code class="language-python">    Percentage of positive tweets: 36.020992366412216%
-    Percentage of neutral tweets: 3.435114503816794%
-    Percentage of negative tweets: 60.54389312977099%</code></pre>
+<pre><code class="language-python">Percentage of positive tweets: 36.020992366412216%
+Percentage of neutral tweets: 3.435114503816794%
+Percentage of negative tweets: 60.54389312977099%</code></pre>
 <h3 id="limitations"><em>Limitations</em></h3>
 <p>When looking at our tweets and the sentiment labels, there are some inaccuracies with the way some of the tweets are labelled. For example, “I guess Die Hard is a Christmas movie” was labelled as a negative tweet when it should be positive, while “Forget ‘Die Hard,’ ‘Go’ Is the Ultimate Anti-Christmas Movie” is labeled as negative as well, but should be neutral. </p>
 <h2 id="summary">Summary</h2>

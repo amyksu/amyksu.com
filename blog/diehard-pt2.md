@@ -6,7 +6,7 @@ hero-image: "ny.jpg"
 
 # Welcome Back! 
 
-In part two of my project, I will be doing some basic cleaning of the tweets we extracted in the last post. Then, we will do create some visualizations using Numpy, Matplotlib, Seaborn, and WordCloud. In this portion of my project, I will be trying to gain insight on these tweets by exploring the following:
+In part two of my project tutorial, I will be doing some basic cleaning of the tweets we extracted in the last post. Then, we will do create some visualizations using Numpy, Matplotlib, Seaborn, and WordCloud. In this portion of my project, I will be trying to gain insight on these tweets by exploring the following:
 
   - What are the most common words in the dataset?
   - What are the most common hashtags in the dataset?

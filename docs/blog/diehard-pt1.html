@@ -84,18 +84,18 @@
 <p>The first step in my project was to extract and scrape Twitter’s API to get tweets relating to Die Hard and Christmas. </p>
 <h2 id="step-1-import-libraries">Step 1: Import Libraries</h2>
 <p>To do this, I first loaded all of the libraries to facilitate this task. </p>
-<pre><code class="language-python">    # code to scrape Twitter API
-    import re # To match or find strings or set of strings
-    import os # To use operating system dependent functionality
-    import csv # To read to CSV
-    import itertools # To create iterators for efficient looping
-    import collections # To store elements 
-    from TwitterAPI import TwitterAPI, TwitterPager # To extract from Twitter&#39;s API</code></pre>
+<pre><code class="language-python"># code to scrape Twitter API
+import re # To match or find strings or set of strings
+import os # To use operating system dependent functionality
+import csv # To read to CSV
+import itertools # To create iterators for efficient looping
+import collections # To store elements 
+from TwitterAPI import TwitterAPI, TwitterPager # To extract from Twitter&#39;s API</code></pre>
 <h2 id="step-2-write-to-file">Step 2: Write to File</h2>
 <p>Using the csv library, I created a file that would store all of the tweets that will be extracted from Twitter.</p>
-<pre><code class="language-python">    # File to write
-    file = csv.writer(open(&quot;die-hard-tweets-no-retweets.csv&quot;, &quot;w+&quot;, 
-      encoding=&quot;utf-8&quot;))</code></pre>
+<pre><code class="language-python"># File to write
+file = csv.writer(open(&quot;die-hard-tweets-no-retweets.csv&quot;, &quot;w+&quot;, 
+  encoding=&quot;utf-8&quot;))</code></pre>
 <h2 id="step-3-initialize-twitter-api">Step 3: Initialize Twitter API</h2>
 <p>In order to extract tweets from Twitter, we need to have a Developer account and to create an app. To do this, you’ll use this link which will then provide you with:</p>
 <ul>
@@ -105,23 +105,23 @@
 <li>Access Token Secret </li>
 </ul>
 <p>All of these keys/tokens will be entered into the script to access and extract from Twitter</p>
-<pre><code class="language-python">    # Initialize Twitter API
-    api = TwitterAPI(&lt;consumer key&gt;,
-                    &lt;consumer secret&gt;,
-                    &lt;access token key&gt;,
-                    &lt;access token secret&gt;)</code></pre>
+<pre><code class="language-python"># Initialize Twitter API
+api = TwitterAPI(&lt;consumer key&gt;,
+                &lt;consumer secret&gt;,
+                &lt;access token key&gt;,
+                &lt;access token secret&gt;)</code></pre>
 <h2 id="step-4-query-tweets-and-write-into-file">Step 4: Query Tweets and write into file</h2>
 <p>With the API initialized and authenticated, the next step is to query the tweets by keywords and extract and write them into our file. I will query the tweets using the words, “Die Hard Christmas” and will filter out any retweets as to avoid duplicate tweets. </p>
-<pre><code class="language-python">    # Query tweets
-    r = TwitterPager(api, &#39;search/tweets&#39;, {&#39;q&#39;: &#39;Die Hard Christmas-filter:retweets&#39;, 
-      &#39;tweet_mode&#39;: &#39;extended&#39;})
+<pre><code class="language-python"># Query tweets
+r = TwitterPager(api, &#39;search/tweets&#39;, {&#39;q&#39;: &#39;Die Hard Christmas-filter:retweets&#39;, 
+  &#39;tweet_mode&#39;: &#39;extended&#39;})
 
-    # Write tweets into file
-    for item in r.get_iterator():
-            row = item[&#39;full_text&#39;] if &#39;full_text&#39; in item else &#39;&#39;
-            row = row.replace(&quot;\n&quot;, &quot; &quot;)
-            print(row)
-            file.writerow([row])</code></pre>
+# Write tweets into file
+for item in r.get_iterator():
+  row = item[&#39;full_text&#39;] if &#39;full_text&#39; in item else &#39;&#39;
+  row = row.replace(&quot;\n&quot;, &quot; &quot;)
+  print(row)
+  file.writerow([row])</code></pre>
 <p>Now, we have our tweets! I stopped the query once I got to around 2,100 tweets for ease of working with the data, and I’ll stop here for now also. </p>
 <p>In the next post, I’ll be cleaning our tweets and analyzing word patterns. Thanks for reading! </p>
     
