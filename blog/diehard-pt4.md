@@ -85,7 +85,11 @@ Using the Naive Bayes Classifier, I trained the classifier to identify positive 
 
 # Conclusion
 
-## *Die Hard is a Christmas movie.*
+<header class="tc ph4">
+  <h1 class="f3 f2-m f1-l fw6 black-90 mv3">
+    Die Hard is a Christmas movie.
+  </h1>
+</header>
 
 Yes, I said it, and I know it’s controversial, but based on all of our analyses, that’s what the data supports. Based on our two sentiment analysis techniques, yes, we got two different answers. However, as I mentioned in my part 3 of this project/tutorial, there are limitations to both of these techniques, which is why we did some of those data visualizations and counts of the most common words, hashtags, and co-occurrence terms. 
 
@@ -109,15 +113,7 @@ From the above, right around Christmas time, the Google searches related to Die 
 
 We can see that in both cases, the searches for Die Hard increase right around the holidays, which is a good indication that most people do enjoy, search, and, or watch Die Hard during Christmas. 
 
-So there you have it, we can finally settle this debate once and for all, 
-
-<header class="tc ph4">
-  <h1 class="f3 f2-m f1-l fw6 black-90 mv3">
-    Die Hard is a Christmas movie.
-  </h1>
-</header>
-
-
+So there you have it, we can finally settle this debate once and for all. 
 
 <div class="pa4">
   <blockquote class="ml0 mt0 pl4 black-90 bl bw2 b--washed-green">
