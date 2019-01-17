@@ -81,12 +81,14 @@
 <h2 id="part-1-semantic-orientation">Part 1: Semantic Orientation</h2>
 <p>As mentioned above, I will first be doing Peter Turney’s technique to perform sentiment analysis (I encourage you to read his <a href="https://arxiv.org/abs/cs/0212032">paper</a> for more information. </p>
 <p>The basis of this technique classifies phrases based on its association with positive and negative words. This classification is defined as Semantic Orientation. To do this, we must first calculate how close a word is with positive and negative words such as “good” and “bad”. This measure of closeness is called the Pointwise Mutual Information (PMI), which is calculated as: </p>
-<p>-&gt;PMI(t1, t2) = log((P(t1 ^ t2))/P(t1) - P(t2))&lt;-</p>
+<p style="text-align: center;">PMI(t1, t2) = log((P(t1 ^ t2))/P(t1) - P(t2))</p>
+
 <p>where t1 and t2 are terms. </p>
 <p>In order to computer P(t), the probability of observing the term t, and P(t1 ^ t2), the probability of observing terms t1 and t2 together), we can re-use the code used to calculate the term frequencies and term co-occurrences that we did above.</p>
 <p>To calculate the probabilities, we will use the following equation:</p>
-<p>-&gt;P(t) = DF(t) / abs(D)&lt;-</p>
-<p>-&gt;P(t1 ^ t2) = DF(t1 ^ t2) / abs(D)&lt;-</p>
+<p style="text-align: center;">P(t) = DF(t) / abs(D)
+
+<p>P(t1 ^ t2) = DF(t1 ^ t2) / abs(D)</p></p>
 <p>where DF is Document Frequency of a term which is the number of time the term occurs in the document or tweets, in our case, and D is the set of documents/tweets.</p>
 <pre><code class="language-python"># Import defaultdict
 from collections import defaultdict
@@ -149,7 +151,7 @@ def analyze_sentiment(tweet):
 <p>Now, that we have created the function, we can assign a sentiment to each of the tweets: 1 for positive, 0 for neutral, and -1 for negative. </p>
 <pre><code class="language-python">df[&#39;SA&#39;] = np.array([analyze_sentiment(tweet) for tweet in df[&#39;clean_tweet&#39;]])
 
-# Labelling tweets
+# Labeling tweets
 pos_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] &gt; 0]
 neu_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] == 0]
 neg_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if df[&#39;SA&#39;][index] &lt; 0]</code></pre>
@@ -158,7 +160,7 @@ neg_tweets = [ tweet for index, tweet in enumerate(df[&#39;clean_tweet&#39;]) if
 Percentage of neutral tweets: 3.435114503816794%
 Percentage of negative tweets: 60.54389312977099%</code></pre>
 <h3 id="limitations"><em>Limitations</em></h3>
-<p>When looking at our tweets and the sentiment labels, there are some inaccuracies with the way some of the tweets are labelled. For example, “I guess Die Hard is a Christmas movie” was labelled as a negative tweet when it should be positive, while “Forget ‘Die Hard,’ ‘Go’ Is the Ultimate Anti-Christmas Movie” is labeled as negative as well, but should be neutral. </p>
+<p>When looking at our tweets and the sentiment labels, there are some inaccuracies with the way some of the tweets are labeled. For example, “I guess Die Hard is a Christmas movie” was labeled as a negative tweet when it should be positive, while “Forget ‘Die Hard,’ ‘Go’ Is the Ultimate Anti-Christmas Movie” is labeled as negative as well, but should be neutral. </p>
 <h2 id="summary">Summary</h2>
 <p>That concludes the tutorial portion of my project. We have walked through, step by step, how to:</p>
 <ol>

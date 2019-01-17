@@ -10,7 +10,7 @@ One of the great debates trending Twitter every holiday season is whether or not
 
 *On the other hand*, just because a movie takes place during Christmas, doesn’t necessarily mean it’s a Christmas movie. Many argue, in fact, that technically, the movie could take place on any other day than Christmas and still work. I mean, Lethal Weapon is set during Christmas and even includes a Jingle Bell Rock opening, but you don’t hear *as many* people debating whether that’s a Christmas movie or not. Then, there's also [Bruce Willis' take](https://www.indiewire.com/2018/07/bruce-willis-die-hard-christmas-movie-1201984149/) on whether the movie is a Christmas movie. (Spoiler Alert: he doesn't). 
 
-So, is Die Hard ***really*** a Christmas movie?
+### So, is Die Hard ***really*** a Christmas movie?
 
 For my first soiree into sentiment analysis, I decided to use Twitter’s API to determine whether the public truly thinks Die Hard is a Christmas movie or not. In my project, I will be showing how I: 
 

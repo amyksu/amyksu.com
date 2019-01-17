@@ -23,7 +23,7 @@ As mentioned above, I will first be doing Peter Turney’s technique to perform 
 
 The basis of this technique classifies phrases based on its association with positive and negative words. This classification is defined as Semantic Orientation. To do this, we must first calculate how close a word is with positive and negative words such as “good” and “bad”. This measure of closeness is called the Pointwise Mutual Information (PMI), which is calculated as: 
 
-->PMI(t1, t2) = log((P(t1 ^ t2))/P(t1) - P(t2))<-
+<p style="text-align: center;">PMI(t1, t2) = log((P(t1 ^ t2))/P(t1) - P(t2))</p>
 
 where t1 and t2 are terms. 
 
@@ -31,9 +31,9 @@ In order to computer P(t), the probability of observing the term t, and P(t1 ^ t
 
 To calculate the probabilities, we will use the following equation:
 
-->P(t) = DF(t) / abs(D)<-
+<p style="text-align: center;">P(t) = DF(t) / abs(D)
 
-->P(t1 ^ t2) = DF(t1 ^ t2) / abs(D)<-
+P(t1 ^ t2) = DF(t1 ^ t2) / abs(D)</p>
 
 where DF is Document Frequency of a term which is the number of time the term occurs in the document or tweets, in our case, and D is the set of documents/tweets.
  
@@ -129,7 +129,7 @@ Now, that we have created the function, we can assign a sentiment to each of the
 ```python
 df['SA'] = np.array([analyze_sentiment(tweet) for tweet in df['clean_tweet']])
 
-# Labelling tweets
+# Labeling tweets
 pos_tweets = [ tweet for index, tweet in enumerate(df['clean_tweet']) if df['SA'][index] > 0]
 neu_tweets = [ tweet for index, tweet in enumerate(df['clean_tweet']) if df['SA'][index] == 0]
 neg_tweets = [ tweet for index, tweet in enumerate(df['clean_tweet']) if df['SA'][index] < 0]
@@ -144,7 +144,7 @@ Percentage of negative tweets: 60.54389312977099%
 
 ### *Limitations*
 
-When looking at our tweets and the sentiment labels, there are some inaccuracies with the way some of the tweets are labelled. For example, “I guess Die Hard is a Christmas movie” was labelled as a negative tweet when it should be positive, while “Forget 'Die Hard,' 'Go' Is the Ultimate Anti-Christmas Movie” is labeled as negative as well, but should be neutral. 
+When looking at our tweets and the sentiment labels, there are some inaccuracies with the way some of the tweets are labeled. For example, “I guess Die Hard is a Christmas movie” was labeled as a negative tweet when it should be positive, while “Forget 'Die Hard,' 'Go' Is the Ultimate Anti-Christmas Movie” is labeled as negative as well, but should be neutral. 
 
 ## Summary
 
