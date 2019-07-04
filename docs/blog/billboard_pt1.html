@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tachyons/4.7.4/tachyons.min.css">
+
+    <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="author" content="Amy K Su">
+    <meta name="description" content="Hello, welcome to my website.">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta property="og:title" content="Amy K Su">
+    <meta property="og:description" content="Hello, welcome to my website.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Amy K Su">
+    <meta property="og:image" content="https://amyksu.com/photos/meta.jpg" />
+    <meta name="twitter:image" content="https://amyksu.com/photos/meta.jpg" />
+    <meta name="twitter:site" content="@amyqueso">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- FAVICON. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/photos/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/photos/favicon-16x16.png">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126087031-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-126087031-1');
+    </script>
+
+    <style>
+      html, body {
+        margin: 0;
+      }
+
+    </style>
+  </head>
+  <body class="avenir next">
+    <header class="bg-light-pink fixed z-999 w-100 ph2 pv2 pv4-ns ph4-m ph5-l  o-90">
+      <nav class="f6 fw6 ttu">
+        <a class="link dim white dib mr3 fl" href="/" title="Home">Home</a>
+        <span class="fr">
+          <a class="link dim white dib mr3" href="/travel" title="Travel">Travel</a>
+          <a class="link dim white dib mr3" href="/projects" title="Projects">Projects</a>
+          <a class="link dim white dib mr3" href="/music" title="Music">Music</a>
+          <a class="link dim white dib mr3" href="/baking" title="Baking">Baking</a>
+      </span>
+      </nav>
+    </header>
+
+    <div class="cover dt w-100 vh-100" style="background-image: url('../photos/adele.jpg')">
+      <span role="img" aria-label="0 to 100: How to Rank on the Billboard Charts (Part 1)"> </span>
+      <div class="dtc v-mid tc">
+        <span class="f-subheadline-l pa5 fw6 tc white ttu tracked">
+          0 to 100: How to Rank on the Billboard Charts (Part 1)
+        </span>
+        <h2 class="mt2 mb0 f6 fw4 white ttu tracked">2019-04-10</h2>
+      </div>
+    </div>
+
+    <!-- Blog goes here. -->
+
+    <div class="avenir next center mw8-l ph1 ph2-m pt4 ph3-l f4.5 mb4 center measure lh-copy">
+      <h1 id="what-does-it-take-for-a-song-to-become-number-1-on-billboard-s-hot-100-">What does it take for a song to become number 1 on Billboard’s Hot 100?</h1>
+<iframe style="max-width:560px; height:315px; width:100%; display: block; margin: 0 auto;" src="https://www.youtube.com/embed/7ysFgElQtjI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<p>After being denied a spot on the Billboard top 100 Country charts, Old Town Road by Lil Nas X grabbed the number 1 spot on the Billboard Hot 100 chart over all genres. The song is odd but catchy meeting at the intersection of rap and country. Something that has not really been done before, in this fashion. Not only is the song different from its predecessors, it is also the shortest number 1 song on the Hot 100 since 1965. </p>
+<p>The story of Old Town Road and its journey to the top made me wonder, <strong><em>“What does it take for a song to become number 1 on Billboard’s Hot 100?”</em></strong> </p>
+<p>In my second week of Data Science bootcamp with Metis, my goal was to learn how to: </p>
+<ol>
+<li>Scrape a website for information </li>
+<li>Create a linear regression with this information and any other relevant information</li>
+</ol>
+<p>I decided to figure out what aspects of a song are useful in predicting a song’s ranking on the top 100. To do that, I did the following: </p>
+<ol>
+<li>Scrape Billboard.com to grab the Billboard Hot 100 from April 2015 to April 2019</li>
+<li>Utilize Spotify’s API to grab the Billboard Hot 100 songs’ audio features and feature engineering</li>
+<li>Create a linear regression to predict a song’s ranking on the Billboard chart</li>
+</ol>
+<h1 id="scraping-the-web">Scraping the Web</h1>
+<p>One of the benefits of using and learning Python is its ability to scrape information from the web in a fairly efficient way. Web scraping makes it possible to take unstructured information from a website and transform it into a readable and structured data(frame, if you so please). </p>
+<p>Before even scraping a website, it’s important to see if the website you want information from is capable of being scraped, meaning that the website allows you to scrape from its interface without being blocked. </p>
+<p>An easy way to do this is to use <code>robots.txt</code>. To use it, simply enter  <code>robots.txt</code> to the end of a url, such as <a href="https://www.billboard.com/robots.txt">https://www.billboard.com/robots.txt</a>, into your browser and the output you get will list out what is allowed and not allowed. In most cases, in my experience at least, the website will show mostly what is not allowed. For example, this was the output for the Billboard website when I used <code>robots.txt</code> : </p>
+<div class="mw7 center ph3-ns">
+  <div class="cf ph2-ns">
+    <img src="../photos/robots.png" alt="Robots.txt Preview"/>
+    </div>
+</div>
+As you can see, it looks like a lot of information isn’t scrapable. BUT if you look closely, there is no mention of not being able to scrape the Top 100 or any of the other charts, so we’ll scrape from there.
+
+<h2 id="scrape-it">Scrape It</h2>
+<p>In class, we learned two methods of web scraping: BeautifulSoup and Selenium. There are positives and negatives to both methods. But, for my project purposes, I used BeautifulSoup as the Billboard website was a fairly simple, static HTML website to scrape from. Selenium, as we learned in class, is better for websites whose content is added via JavaScript as opposed to HTML and for webpages that require more interaction. Selenium will automate web browser interaction from Python and make JavaScript links no longer an issue. </p>
+<p>To scrape the Billboard Top 100, I created two functions. The first one was to calculate the week dates of each Billboard chart from a specific period of time to another. The function takes in two dates, in datetime format, and a time delta of your choosing and using a for loop, creates a list of dates to input into my second function which scrapes the actual website. Because the Billboard links are by a specific week date, this function creates a list of weeks in the Billboard url format. </p>
+<pre><code class="language-python">def week_delta(start, end, delta):
+    curr = start
+    while curr &lt; end:
+        yield curr
+        curr += delta
+
+week_as_datetime = []
+weeks = []
+for result in week_delta(date(2012, 4, 14), date(2019, 4, 20), timedelta(days=7)):
+    week_as_datetime.append(result)
+    weeks.append(result.strftime(&#39;%Y-%m-%d&#39;))</code></pre>
+<p>The second function I created scrapes the Billboard website. Like I mentioned before, because all of the Top 100 chart urls are the same with the addition of the week date, I could add the date strings created in the function above to insert into the url. The function then takes the url, scrapes the webpage, soupifies the text, meaning it takes in the html as text, parses the html, and grabs the specific div’s that contain the information that I need. </p>
+<pre><code class="language-python">url = &#39;https://www.billboard.com/charts/hot-100/{}&#39;
+top_100 = []
+
+def billboard_web_scrape(url):
+    for week in weeks:
+        file_url = url.format(week)
+        response = requests.get(file_url)
+        print(response.status_code)
+
+            # Soupify the text 
+        page = response.text
+
+            # Parse HTML
+        soup = BeautifulSoup(page, &#39;html.parser&#39;)
+
+            # Grab information from top 100 charts 
+        for minisoup in soup.find_all(class_=&#39;chart-list-item&#39;):
+            song = {}
+            song[&#39;week_of&#39;] = datetime.strptime(week, &#39;%Y-%m-%d&#39;)
+            song[&#39;rank&#39;] = minisoup[&#39;data-rank&#39;]
+            song[&#39;title&#39;] = minisoup[&#39;data-title&#39;]
+            song[&#39;artist&#39;] = minisoup[&#39;data-artist&#39;]
+            try: 
+                song[&#39;last_week&#39;] = minisoup.find(&#39;div&#39;, {&#39;class&#39;:&#39;chart-list-item__last-week&#39;}).get_text(strip=True)
+            except:
+                song[&#39;last_week&#39;] = np.nan
+            try:     
+                song[&#39;peak_position&#39;] = minisoup.find(&#39;div&#39;, {&#39;class&#39;:&#39;chart-list-item__weeks-at-one&#39;}).get_text(strip=True)
+            except:
+                song[&#39;peak_position&#39;] = np.nan
+
+            try: 
+                song[&#39;week_on_chart&#39;] = minisoup.find(&#39;div&#39;, {&#39;class&#39;:&#39;chart-list-item__weeks-on-chart&#39;}).get_text(strip=True)
+            except:
+                song[&#39;week_on_chart&#39;] = np.nan
+            top_100.append(song)</code></pre>
+<p>To scrape the website of your choosing, in this case, Billboard, you enter the url into the function. Then, it will spit out a status code and scrape the website for the information you have chosen and store it in a list of dictionaries. In this case, I have scraped the website for the following information:</p>
+<ul>
+<li>Week of - the week of the top 100 chart</li>
+<li>Rank </li>
+<li>Title </li>
+<li>Artist</li>
+<li>Last week: rank from the previous week</li>
+<li>Peak Position: highest position on the chart </li>
+<li>Week on chart: How many weeks the song has been on the Top 100 </li>
+</ul>
+<p>Now that I have all my information, all I have to do is store it as a csv, using the <code>.to_csv</code> function. </p>
+<p>That’s all there is to webscraping! Next I will go into how I utilized the Spotify API to get the audio features of the songs I scraped and feature engineering. </p>
+<p>Thanks for reading! </p>
+    
+    </div>
+
+
+    <footer class="mw-100 pv4 ph3 ph5-ns tc">
+      <section class="cf mb5">
+          <div class="mb4 mb0-ns w-100 w-50-l fr">
+            <a class="black-70 f4 f3-ns fw6 tl link dim dib pv3 mt2 mb4 mb0-l" href="mailto:hello@amyksu.com" >
+              hello@amyksu.com
+            </a>
+          </div>
+          <div class="mb4 mb0-ns fl w-100 w-50-l" >
+            <p class="f4 fw6 mb2 black-70 mt0">
+              Let's be friends
+            </p>
+            <input placeholder="Email Address" class="mw-100 w-100 w5-ns f5 input-reset ba b--black-20 pv3 ph4 border-box">
+            <input type="submit" class="input-reset w-100 w-auto-ns bg-black-80 white f5 pv2 pv3-ns ph4 ba b--black-80 bg-hover-mid-gray">
+          </div>
+      </section>  
+    <small class="f6 db tc pa3">© 2018 <b class="ttu">Amy K Su, Inc</b>., All Rights Reserved</small>
+    <a class="link dim gray dib h2 w2 br-100 mr3" href="https://instagram.com/amyqueso" title="Instagram">
+      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M8 0C5.827 0 5.555.01 4.702.048 3.85.088 3.27.222 2.76.42c-.526.204-.973.478-1.417.923-.445.444-.72.89-.923 1.417-.198.51-.333 1.09-.372 1.942C.008 5.555 0 5.827 0 8s.01 2.445.048 3.298c.04.852.174 1.433.372 1.942.204.526.478.973.923 1.417.444.445.89.72 1.417.923.51.198 1.09.333 1.942.372.853.04 1.125.048 3.298.048s2.445-.01 3.298-.048c.852-.04 1.433-.174 1.942-.372.526-.204.973-.478 1.417-.923.445-.444.72-.89.923-1.417.198-.51.333-1.09.372-1.942.04-.853.048-1.125.048-3.298s-.01-2.445-.048-3.298c-.04-.852-.174-1.433-.372-1.942-.204-.526-.478-.973-.923-1.417-.444-.445-.89-.72-1.417-.923-.51-.198-1.09-.333-1.942-.372C10.445.008 10.173 0 8 0zm0 1.44c2.136 0 2.39.01 3.233.048.78.036 1.203.166 1.485.276.374.145.64.318.92.598.28.28.453.546.598.92.11.282.24.705.276 1.485.038.844.047 1.097.047 3.233s-.01 2.39-.048 3.233c-.036.78-.166 1.203-.276 1.485-.145.374-.318.64-.598.92-.28.28-.546.453-.92.598-.282.11-.705.24-1.485.276-.844.038-1.097.047-3.233.047s-2.39-.01-3.233-.048c-.78-.036-1.203-.166-1.485-.276-.374-.145-.64-.318-.92-.598-.28-.28-.453-.546-.598-.92-.11-.282-.24-.705-.276-1.485C1.45 10.39 1.44 10.136 1.44 8s.01-2.39.048-3.233c.036-.78.166-1.203.276-1.485.145-.374.318-.64.598-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276C5.61 1.45 5.864 1.44 8 1.44zm0 2.452c-2.27 0-4.108 1.84-4.108 4.108 0 2.27 1.84 4.108 4.108 4.108 2.27 0 4.108-1.84 4.108-4.108 0-2.27-1.84-4.108-4.108-4.108zm0 6.775c-1.473 0-2.667-1.194-2.667-2.667 0-1.473 1.194-2.667 2.667-2.667 1.473 0 2.667 1.194 2.667 2.667 0 1.473-1.194 2.667-2.667 2.667zm5.23-6.937c0 .53-.43.96-.96.96s-.96-.43-.96-.96.43-.96.96-.96.96.43.96.96z"/></svg>
+    </a>
+    <a class="link dim gray dib h2 w2 br-100 mr3 " href="https://twitter.com/amyqueso" title="amyqueso">
+      <svg data-icon="twitter" viewBox="0 0 32 32" style="fill:currentcolor">
+        <title>twitter icon</title>
+        <path d="M2 4 C6 8 10 12 15 11 A6 6 0 0 1 22 4 A6 6 0 0 1 26 6 A8 8 0 0 0 31 4 A8 8 0 0 1 28 8 A8 8 0 0 0 32 7 A8 8 0 0 1 28 11 A18 18 0 0 1 10 30 A18 18 0 0 1 0 27 A12 12 0 0 0 8 24 A8 8 0 0 1 3 20 A8 8 0 0 0 6 19.5 A8 8 0 0 1 0 12 A8 8 0 0 0 3 13 A8 8 0 0 1 2 4"></path>
+      </svg>
+    </a>
+    <a class="link dim gray dib h2 w2 br-100 mr3" href="https://github.com/amyksu" title="GitHub">
+      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M8 0C3.58 0 0 3.582 0 8c0 3.535 2.292 6.533 5.47 7.59.4.075.547-.172.547-.385 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.725-.496.056-.486.056-.486.803.056 1.225.824 1.225.824.714 1.223 1.873.87 2.33.665.072-.517.278-.87.507-1.07-1.777-.2-3.644-.888-3.644-3.953 0-.873.31-1.587.823-2.147-.083-.202-.358-1.015.077-2.117 0 0 .672-.215 2.2.82.638-.178 1.323-.266 2.003-.27.68.004 1.364.092 2.003.27 1.527-1.035 2.198-.82 2.198-.82.437 1.102.163 1.915.08 2.117.513.56.823 1.274.823 2.147 0 3.073-1.87 3.75-3.653 3.947.287.246.543.735.543 1.48 0 1.07-.01 1.933-.01 2.195 0 .215.144.463.55.385C13.71 14.53 16 11.534 16 8c0-4.418-3.582-8-8-8"/></svg>
+    </a>
+  </footer>
+
+  </body>
+</html>
