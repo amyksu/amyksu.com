@@ -22,6 +22,8 @@ I decided to figure out what aspects of a song are useful in predicting a song�
 2. Utilize Spotify’s API to grab the Billboard Hot 100 songs’ audio features and feature engineering
 3. Create a linear regression to predict a song’s ranking on the Billboard chart
 
+As always, for all code, please see [my github](https://github.com/amyksu/predicting_billboard_charts_ranking).
+
 # Scraping the Web
 
 One of the benefits of using and learning Python is its ability to scrape information from the web in a fairly efficient way. Web scraping makes it possible to take unstructured information from a website and transform it into a readable and structured data(frame, if you so please). 
