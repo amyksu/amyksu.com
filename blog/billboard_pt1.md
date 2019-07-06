@@ -1,7 +1,7 @@
 ---
 title: "0 to 100: How to Rank on the Billboard Charts (Part 1)"
 date: "2019-04-10"
-hero-image: "adele.jpg"
+hero-image: "a.jpg"
 ---
 
 # What does it take for a song to become number 1 on Billboard’s Hot 100?
