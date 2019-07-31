@@ -1,7 +1,7 @@
 ---
 title: "Follow the Clues: Hopper Puzzle"
 date: "2019-08-01"
-hero-image: "hopper_bg.jpg"
+hero-image: "hopper.jpg"
 ---
 
 # Challenge Accepted
