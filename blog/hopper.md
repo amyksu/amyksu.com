@@ -13,7 +13,7 @@ For those of you who don’t know, Hopper is a flight-booking app that predicts 
 
 ## Following the Clues
 
-In the job description, the line goes, “At Hopper, every dataset tells a story. Do you have what it takes to decipher the clues?” When you click on the link, a google document loads and you just see two columns on numbers. My first thought was, “These are for sure longitude and latitude pairs”. The thing was that the numbers seemed a little low. Not to be deterred, I continued on and started my analysis. For all of my code, please check out my github. 
+In the job description, the line goes, “At Hopper, every dataset tells a story. Do you have what it takes to decipher the clues?” When you click on the link, a google document loads and you just see two columns on numbers. My first thought was, “These are for sure longitude and latitude pairs”. The thing was that the numbers seemed a little low. Not to be deterred, I continued on and started my analysis. For all of my code, please check out [my github](). 
 
 To confirm or deny my hypothesis, I decided to do some exploratory data analysis (EDA) and plotted the data in a scatterplot using Seaborn (shown below): 
 
