@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tachyons/4.7.4/tachyons.min.css">
+
+    <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="author" content="Amy K Su">
+    <meta name="description" content="Hello, welcome to my website.">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta property="og:title" content="Amy K Su">
+    <meta property="og:description" content="Hello, welcome to my website.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Amy K Su">
+    <meta property="og:image" content="https://amyksu.com/photos/meta.jpg" />
+    <meta name="twitter:image" content="https://amyksu.com/photos/meta.jpg" />
+    <meta name="twitter:site" content="@amyqueso">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- FAVICON. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/photos/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/photos/favicon-16x16.png">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126087031-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-126087031-1');
+    </script>
+
+    <style>
+      html, body {
+        margin: 0;
+      }
+
+    </style>
+  </head>
+  <body class="avenir next">
+    <header class="bg-light-pink fixed z-999 w-100 ph2 pv2 pv4-ns ph4-m ph5-l  o-90">
+      <nav class="f6 fw6 ttu">
+        <a class="link dim white dib mr3 fl" href="/" title="Home">Home</a>
+        <span class="fr">
+          <a class="link dim white dib mr3" href="/travel" title="Travel">Travel</a>
+          <a class="link dim white dib mr3" href="/projects" title="Projects">Projects</a>
+          <a class="link dim white dib mr3" href="/music" title="Music">Music</a>
+          <a class="link dim white dib mr3" href="/baking" title="Baking">Baking</a>
+      </span>
+      </nav>
+    </header>
+
+    <div class="cover dt w-100 vh-100" style="background-image: url('../photos/nlp_badge.jpg')">
+      <span role="img" aria-label="The Great NLP Bake Off"> </span>
+      <div class="dtc v-mid tc">
+        <span class="f-subheadline-l pa5 fw6 tc white ttu tracked">
+          The Great NLP Bake Off
+        </span>
+        <h2 class="mt2 mb0 f6 fw4 white ttu tracked">2019-07-28</h2>
+      </div>
+    </div>
+
+    <!-- Blog goes here. -->
+
+    <div class="avenir next center mw8-l ph1 ph2-m pt4 ph3-l f4.5 mb4 center measure lh-copy">
+      <h1 id="ready-set-bake">Ready, Set, BAKE</h1>
+<p>One of my not-so-secret obsessions is the British television show, the Great British Bake Off or as I like to call it, GBBO. Being an avid baker myself, it’s so entertaining and mesmerizing to see all of these amazing home bakers make these amazing creations from scratch. The show is such a stark contrast to American competition shows because of how pleasant and supportive all of the contestants are to one another. There are never any insults or shit talking, just a lot of encouragement and, sometimes, consoling when a contestant is feeling down. Their relationships and the relationships between the contestants and the hosts and judges are some of my favorite parts of the show. It’s also a great show to wind down to after a stressful day.</p>
+<p>With this in mind, I wanted to see what insights and trends I could get from the dialogue throughout the seasons, including what topics recurred over the seasons/episodes, if there was a way to determine what flavors tended to relate to one another, and if I could use sentiment analysis as well as topic modeling to see if these would corroborate my thoughts on the show and to uncover some trends over the seasons.</p>
+<h1 id="technical-challenge">Technical Challenge</h1>
+<p>To do my analysis, I decided to use the subtitles for the first four seasons of GBBO that are available on Netflix which ended up being 40 episodes in total. I chose the first four seasons, seasons 1 through 4, to keep some consistency but also because I have a bias towards the original judges and hosts of the show, Mary Berry, Mel and Sue. Seasons 5 and 6 have a new judge who joined Paul Hollywood, one of the original judges and two new hosts hosts.</p>
+<p>Using Netflix, I downloaded the subtitles for all of the episodes from these seasons in VTT files. Luckily for me, there was a python VTT library that I allowed me to read in the VTT files and format. Once they were read in, I parsed each file and created a list of dictionaries organized by episode and text. Using the list of dictionaries, I, then, created a DataFrame.</p>
+<pre><code class="language-python">    for e in episodes:
+        episode = {}
+        episode[&#39;episode_num&#39;] = e
+        episode[&#39;season&#39;] = e[:2]
+        episode[&#39;episode&#39;] = e[2:]
+        vtt = webvtt.read(&#39;gbbo_{}.vtt&#39;.format(e))
+        episode[&#39;text&#39;] = &quot; &quot;.join([ele.text for ele in vtt])
+        data.append(episode)</code></pre>
+<p>To achieve what I want to do with all of the subtitles, I had to separate each episode into individual dialogue by speaker using RegEx. Once I had speaker and dialogue separated, I used the SpaCy library to lemmatize words, to remove stop words and to tokenize the dialogue. I then used scikit-learn’s TF-IDF implementation to create a matrix of each dialogue’s word frequency vector. I chose TF-IDF over other vectorizers because it took into account the word count disparities as the dialogue for certain people and in certain episodes were shorter or longer than others. For more information on how I pre-processed, check out my <a href="https://github.com/amyksu/great-nlp-bake-off">Github</a>.</p>
+<h2 id="topic-modeling">Topic Modeling</h2>
+<p>With the subtitles, I decided to use Non-Negative Matrix Factorization, or NMF, for topic modeling. Unlike its probabilistic counterpart, Latent Dirichlet Allocation, or LDA, NMF uses linear algebra to factor high-dimensional vectors into a low-dimensionality representation. Both methods take a bag of words matrix (documents * words) as input. The bag of words matrix represents documents as rows and words as columns and in both methods, the goal is to produce 2 smaller matrices: a document to topic matrix and a word to topic matrix. When these two matrices are multiplied together, they would reproduce the bag of words matrix with the lowest error.</p>
+<p>Using NMF, I created a function that would take in the model name, feature names, number of top words to show, and topic names. </p>
+<pre><code class="language-python">    def display_topics(model, feature_names, no_top_words, topic_names=None):
+        for ix, topic in enumerate(model.components_):
+            if not topic_names or not topic_names[ix]:
+                print(&quot;\nTopic &quot;, ix)
+            else:
+                print(&quot;\nTopic: &#39;&quot;,topic_names[ix],&quot;&#39;&quot;)
+            print(&quot;, &quot;.join([feature_names[i]
+                            for i in topic.argsort()[:-no_top_words - 1:-1]]))</code></pre>
+<p>Eventually, I landed on 8 topics: </p>
+<p><img src="https://paper-attachments.dropbox.com/s_E83A0991D16F85D0F734E8C332A054CEC6C641F278616755C508C0D3F557D050_1566785621406_image.png" alt="GBBO Topics"></p>
+<h2 id="word2vec">Word2Vec</h2>
+<p>I then used gensim’s Word2Vec to create word vectors to find word clusters that are most similar to one another. I did this to see which words were most similar to each other in hopes of seeing whether certain flavors appeared with certain baked goods.</p>
+<p>To show the results of my pre-trained Word2Vec embedding, I used TSNE to plot a subset of similar words. I applied TSNE to the matrix to project each word to perform dimensionality reduction to present the words in a 2D space. The subset of words I chose were:</p>
+<ul>
+<li>Cake</li>
+<li>Pie</li>
+<li>Pastry</li>
+<li>Eggs</li>
+<li>Bread</li>
+<li>Winner</li>
+<li>Raspberry</li>
+<li>Technical</li>
+<li>Chocolate</li>
+</ul>
+<p><img src="https://paper-attachments.dropbox.com/s_E83A0991D16F85D0F734E8C332A054CEC6C641F278616755C508C0D3F557D050_1566786001311_image.png" alt="TSNE Plot"></p>
+<p>Based on the above, the main takeaways were:</p>
+<ul>
+<li>The word “winner” is most similar to “bread” and “technical” which, as a devoted fan of the show, is true as most winners are good at technicals and usually win bread week.</li>
+<li>The word cake is most similar to the flavors “chocolate” and “raspberry”.</li>
+<li>The words “pie”, “pastry”, and “egg” are most similar and closest to each other which makes sense because a lot of the pie crusts made by the bakers are pastry crusts. In addition, it makes sense that eggs are close to both words as eggs are used for pastry and pie crusts to give them the shiny brown crispy look.</li>
+</ul>
+<h2 id="sentiment-analysis">Sentiment Analysis</h2>
+<p>To gain further insights, I used Vader for sentiment analysis over all of the seasons. I used this to compare the sentiment over each of the contestants over the seasons as well as the judges to see whether there were any trends in whether either judge was more negative or positive than the other.</p>
+<p>From my sentiment analysis, I plotted the overall sentiment by episode between the male and female judges and contestants. When looking at the average, it’s hard to see an overall trend, but when you single out each sentiment, it’s a little easier to see overall trends. When looking at the individual sentiments, in the second and fourth seasons, the males were more negative than the females. In the first and third seasons, it was the opposite. This is further supported when looking at the individual positive sentiment. When it comes to the judges, Mary was more positive than Paul in most of the seasons up until the fourth season.</p>
+<p>I created a Tableau dashboard showing the topic makeup and sentiment trends over the episodes/seasons.</p>
+<div class='tableauPlaceholder' id='viz1566786422150' style='position: fixed'><noscript><a href='http:&#47;&#47;www.amyksu.com'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Gr&#47;GreatBritishBakeOffNLPAnalysis&#47;FinalDashboard&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='GreatBritishBakeOffNLPAnalysis&#47;FinalDashboard' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Gr&#47;GreatBritishBakeOffNLPAnalysis&#47;FinalDashboard&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1566786422150');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1366px';vizElement.style.height='795px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1366px';vizElement.style.height='795px';} else { vizElement.style.width='100%';vizElement.style.height='1427px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+
+<h1 id="until-next-time">Until Next Time</h1>
+<p>In the future, I would love to delve deeper into seeing if there was a way to predict which flavors tend to yield more positive judging from the judges and whether I can predict what flavors will win. Overall, I would like to focus more on the actual baking on the show and get more information on the ingredients and the baking on the show.</p>
+<p>Thanks for reading 🙂 and I hope my project didn’t make you too hungry the way it did to me. </p>
+    
+    </div>
+
+
+    <footer class="mw-100 pv4 ph3 ph5-ns tc">
+      <section class="cf mb5">
+          <div class="mb4 mb0-ns w-100 w-50-l fr">
+            <a class="black-70 f4 f3-ns fw6 tl link dim dib pv3 mt2 mb4 mb0-l" href="mailto:hello@amyksu.com" >
+              hello@amyksu.com
+            </a>
+          </div>
+          <div class="mb4 mb0-ns fl w-100 w-50-l" >
+            <p class="f4 fw6 mb2 black-70 mt0">
+              Let's be friends
+            </p>
+            <input placeholder="Email Address" class="mw-100 w-100 w5-ns f5 input-reset ba b--black-20 pv3 ph4 border-box">
+            <input type="submit" class="input-reset w-100 w-auto-ns bg-black-80 white f5 pv2 pv3-ns ph4 ba b--black-80 bg-hover-mid-gray">
+          </div>
+      </section>  
+    <small class="f6 db tc pa3">© 2018 <b class="ttu">Amy K Su, Inc</b>., All Rights Reserved</small>
+    <a class="link dim gray dib h2 w2 br-100 mr3" href="https://instagram.com/amyqueso" title="Instagram">
+      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M8 0C5.827 0 5.555.01 4.702.048 3.85.088 3.27.222 2.76.42c-.526.204-.973.478-1.417.923-.445.444-.72.89-.923 1.417-.198.51-.333 1.09-.372 1.942C.008 5.555 0 5.827 0 8s.01 2.445.048 3.298c.04.852.174 1.433.372 1.942.204.526.478.973.923 1.417.444.445.89.72 1.417.923.51.198 1.09.333 1.942.372.853.04 1.125.048 3.298.048s2.445-.01 3.298-.048c.852-.04 1.433-.174 1.942-.372.526-.204.973-.478 1.417-.923.445-.444.72-.89.923-1.417.198-.51.333-1.09.372-1.942.04-.853.048-1.125.048-3.298s-.01-2.445-.048-3.298c-.04-.852-.174-1.433-.372-1.942-.204-.526-.478-.973-.923-1.417-.444-.445-.89-.72-1.417-.923-.51-.198-1.09-.333-1.942-.372C10.445.008 10.173 0 8 0zm0 1.44c2.136 0 2.39.01 3.233.048.78.036 1.203.166 1.485.276.374.145.64.318.92.598.28.28.453.546.598.92.11.282.24.705.276 1.485.038.844.047 1.097.047 3.233s-.01 2.39-.048 3.233c-.036.78-.166 1.203-.276 1.485-.145.374-.318.64-.598.92-.28.28-.546.453-.92.598-.282.11-.705.24-1.485.276-.844.038-1.097.047-3.233.047s-2.39-.01-3.233-.048c-.78-.036-1.203-.166-1.485-.276-.374-.145-.64-.318-.92-.598-.28-.28-.453-.546-.598-.92-.11-.282-.24-.705-.276-1.485C1.45 10.39 1.44 10.136 1.44 8s.01-2.39.048-3.233c.036-.78.166-1.203.276-1.485.145-.374.318-.64.598-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276C5.61 1.45 5.864 1.44 8 1.44zm0 2.452c-2.27 0-4.108 1.84-4.108 4.108 0 2.27 1.84 4.108 4.108 4.108 2.27 0 4.108-1.84 4.108-4.108 0-2.27-1.84-4.108-4.108-4.108zm0 6.775c-1.473 0-2.667-1.194-2.667-2.667 0-1.473 1.194-2.667 2.667-2.667 1.473 0 2.667 1.194 2.667 2.667 0 1.473-1.194 2.667-2.667 2.667zm5.23-6.937c0 .53-.43.96-.96.96s-.96-.43-.96-.96.43-.96.96-.96.96.43.96.96z"/></svg>
+    </a>
+    <a class="link dim gray dib h2 w2 br-100 mr3 " href="https://twitter.com/amyqueso" title="amyqueso">
+      <svg data-icon="twitter" viewBox="0 0 32 32" style="fill:currentcolor">
+        <title>twitter icon</title>
+        <path d="M2 4 C6 8 10 12 15 11 A6 6 0 0 1 22 4 A6 6 0 0 1 26 6 A8 8 0 0 0 31 4 A8 8 0 0 1 28 8 A8 8 0 0 0 32 7 A8 8 0 0 1 28 11 A18 18 0 0 1 10 30 A18 18 0 0 1 0 27 A12 12 0 0 0 8 24 A8 8 0 0 1 3 20 A8 8 0 0 0 6 19.5 A8 8 0 0 1 0 12 A8 8 0 0 0 3 13 A8 8 0 0 1 2 4"></path>
+      </svg>
+    </a>
+    <a class="link dim gray dib h2 w2 br-100 mr3" href="https://github.com/amyksu" title="GitHub">
+      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414"><path d="M8 0C3.58 0 0 3.582 0 8c0 3.535 2.292 6.533 5.47 7.59.4.075.547-.172.547-.385 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.725-.496.056-.486.056-.486.803.056 1.225.824 1.225.824.714 1.223 1.873.87 2.33.665.072-.517.278-.87.507-1.07-1.777-.2-3.644-.888-3.644-3.953 0-.873.31-1.587.823-2.147-.083-.202-.358-1.015.077-2.117 0 0 .672-.215 2.2.82.638-.178 1.323-.266 2.003-.27.68.004 1.364.092 2.003.27 1.527-1.035 2.198-.82 2.198-.82.437 1.102.163 1.915.08 2.117.513.56.823 1.274.823 2.147 0 3.073-1.87 3.75-3.653 3.947.287.246.543.735.543 1.48 0 1.07-.01 1.933-.01 2.195 0 .215.144.463.55.385C13.71 14.53 16 11.534 16 8c0-4.418-3.582-8-8-8"/></svg>
+    </a>
+  </footer>
+
+  </body>
+</html>
