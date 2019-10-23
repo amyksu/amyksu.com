@@ -1,6 +1,6 @@
 ---
 title: "Buzzfeed Takehome"
-date: "2019-08-30"
+date: "2019-10-22"
 hero-image: "buzzfeed.jpg"
 ---
 
